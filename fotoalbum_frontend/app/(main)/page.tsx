@@ -1,7 +1,7 @@
 "use client";
 import { Box, Button, ButtonGroup, Paper, Typography } from "@mui/material";
 import Image from "next/image";
-import ImageListItem from "./components/image_list_item";
+import ImageListItem from "../components/image_list_item";
 import { useEffect, useState } from "react";
 
 export default function Home() {
