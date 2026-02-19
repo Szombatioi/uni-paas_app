@@ -5,8 +5,10 @@ import { login } from "@/axios/auth-functions";
 import { Box, Button, Container, Link, Paper, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function LoginPage() {
+  const { t } = useTranslation("common");
   const { showMessage } = useSnackbar();
   const router = useRouter()
 
@@ -16,10 +18,11 @@ export default function LoginPage() {
   const handleLogin = async () => {
     try {
       await login({ email, password });
+      showMessage(t("login_success"));
       router.replace("/");
     } catch (err) {
       console.log(err);
-      showMessage(`Nem sikerült bejelentkezni!`, Severity.error);
+      showMessage(t("login_fail"), Severity.error);
     }
   };
 

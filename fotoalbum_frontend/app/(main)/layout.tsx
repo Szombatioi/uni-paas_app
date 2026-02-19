@@ -7,6 +7,9 @@ import { Theme, ThemeProvider } from "@emotion/react";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import theme from "../themes/main_theme";
 import { SnackbarProvider } from "../contexts/snackbar-provider";
+import { Box, DialogContent } from "@mui/material";
+import { DialogProvider } from "../contexts/dialog-context";
+import { LanguageProvider } from "../contexts/LanguageContext";
 
 export default function RootLayout({
   children,
@@ -22,14 +25,19 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <AuthProvider>
-              <SnackbarProvider>
-                <Navbar />
-                {children}
-              </SnackbarProvider>
+              <LanguageProvider>
+                <SnackbarProvider>
+                  <DialogProvider>
+                    <Navbar />
+                    <Box sx={(theme) => theme.mixins.toolbar} />
+                    {children}
+                  </DialogProvider>
+                </SnackbarProvider>
+              </LanguageProvider>
             </AuthProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
-    </html>
+    </html >
   );
 }

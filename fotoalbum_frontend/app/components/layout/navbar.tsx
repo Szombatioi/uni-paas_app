@@ -1,22 +1,25 @@
+"use client";
 import { logout } from "@/axios/auth-functions";
 import { Logout } from "@mui/icons-material";
-import { Box, IconButton, Typography } from "@mui/material";
+import { AppBar, Box, IconButton, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 export default function Navbar() {
     const router = useRouter();
+    const { t } = useTranslation("common");
     return (
-        <Box sx={{border: '1px solid red', display: "flex", justifyContent: "space-between"}}>
+        <AppBar elevation={1} sx={{display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", py: 1}}>
             <div />
 
-            <Typography variant="h3" align="center">
-                Fotóalbum
+            <Typography variant="h3" align="center" sx={{textShadow: '1px 1px 0 #000'}}>
+                {t("title")}
             </Typography>
 
             {/* Account part */}
-            <IconButton onClick={() => {logout(); router.replace("/auth/login");}}>
-                <Logout />
+            <IconButton sx={{marginRight: 1}} onClick={() => {logout(); router.replace("/auth/login");}}>
+                <Logout htmlColor="#fff" />
             </IconButton>
-        </Box>
+        </AppBar>
     );
 }

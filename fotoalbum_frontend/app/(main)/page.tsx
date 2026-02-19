@@ -1,23 +1,34 @@
 "use client";
-import { Box, Button, ButtonGroup, Paper, Typography } from "@mui/material";
+import { Box, Button, ButtonGroup, Fab, Paper, Typography } from "@mui/material";
 import Image from "next/image";
 import ImageListItem from "../components/image_list_item";
 import { useEffect, useState } from "react";
+import { Add } from "@mui/icons-material";
+import { useDialog } from "../contexts/dialog-context";
+import UploadDialog from "../dialogs/upload_image.dialog";
+import { AsyncCallbackSet } from "next/dist/server/lib/async-callback-set";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
+  const { t } = useTranslation("common");
   const [firstLoad, setFirstLoad] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   const [sortBy, setSortBy] = useState<"name" | "date">("name");
   const sortTypes = [
-    { label: "Név", value: "name" },
-    { label: "Dátum", value: "date" },
+    { label: t("name"), value: "name" },
+    { label: t("date"), value: "date" },
   ];
 
   const [images, setImages] = useState<any[]>([]); //TODO: define type
 
+  const uploadImage = async (file: File) => {
+    
+  };
+
   useEffect(() => {
     //TODO: fetch images or if already fetched, sort them
-    if(firstLoad) {
+    if (firstLoad) {
       //TODO: fetch + sort images
       setFirstLoad(false);
     } else {
@@ -27,7 +38,7 @@ export default function Home() {
 
   //TODO: check if good
   const sortImages = (images: any[]) => {
-    if(sortBy === "name") {
+    if (sortBy === "name") {
       return images.sort((a, b) => a.name.localeCompare(b.name));
     } else {
       return images.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -36,9 +47,9 @@ export default function Home() {
 
   return (
     <>
-      <Box sx={{display: 'flex', flexDirection: 'column', gap: 2, padding: 2}}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 2 }}>
         {/* Switch */}
-        <ButtonGroup variant="outlined" sx={{alignSelf: 'end'}}>
+        <ButtonGroup variant="outlined" sx={{ alignSelf: 'end' }}>
           {sortTypes.map((type) => (
             <Button
               key={type.value}
@@ -54,6 +65,18 @@ export default function Home() {
         <Paper>
 
         </Paper>
+
+        <Fab onClick={() => {
+          setDialogOpen(true)
+        }} size="large" color="primary" sx={{ position: "absolute", bottom: 15, right: 15 }}>
+          <Add />
+        </Fab>
+
+        <UploadDialog
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          onSubmit={(file: File) => uploadImage(file)}
+        />
       </Box>
     </>
   );

@@ -5,5 +5,14 @@
     "password_required": "Adja meg a jelszavát!",
     "password_again_required": "Adja meg újra a jelszavát!",
     "passwords_do_not_match": "Nem egyeznek a jelszavak!",
-    "register_error": "Hiba a regisztrációval!"
+    "register_error": "Hiba a regisztrációval!",
+    "login_success": "Sikeres bejelentkezés!",
+    "login_fail": "Sikertelen bejelentkezés!",
+    "title": "Fotóalbum",
+    "upload_image": "Kép feltöltése",
+    "select_file": "Fájl kiválasztása",
+    "cancel": "Mégse",
+    "upload": "Feltöltés",
+    "name": "Név",
+    "date": "Dátum"
 }

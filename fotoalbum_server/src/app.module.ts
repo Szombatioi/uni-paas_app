@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StorageModule } from './storage/minio.module';
+import { Image } from './entities/image.entity';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { StorageModule } from './storage/minio.module';
       }),
     }),
     StorageModule,
+    TypeOrmModule.forFeature([Image])
   ],
   controllers: [AppController],
   providers: [AppService],
