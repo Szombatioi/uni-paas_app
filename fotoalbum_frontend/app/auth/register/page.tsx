@@ -2,8 +2,9 @@
 import { Severity, useSnackbar } from "@/app/contexts/snackbar-provider";
 import { register } from "@/axios/auth-functions";
 import { Box, Button, Container, Link, Paper, TextField, Typography } from "@mui/material";
+import Error from "next/error";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function RegisterPage() {
@@ -44,16 +45,20 @@ export default function RegisterPage() {
             return;
         }
 
-        try{
+        try {
             const res = await register({
                 firstName,
                 lastName,
                 email,
                 password
             });
+            showMessage(t("register_success"), Severity.success)
             router.replace("/");
-        } catch(err){
-            showMessage(t("register_error"), Severity.error);
+        } catch (err: any) {
+            console.error(err)
+             const message = err.response?.data?.message || err.message || 'unknown_error';
+             showMessage(t(message), Severity.error)
+            // showMessage(t("register_error"), Severity.error);
         }
     };
 
@@ -83,7 +88,13 @@ export default function RegisterPage() {
                         Regisztráció
                     </Typography>
 
-                    <Box component="form" sx={{ mt: 3, width: '100%' }}>
+                    <Box 
+                        component="form" 
+                        sx={{ mt: 3, width: '100%' }}
+                        onSubmit={async (e) => {
+                            e.preventDefault();
+                            handleRegister();
+                        }}>
 
                         <TextField
                             margin="normal"
@@ -153,7 +164,7 @@ export default function RegisterPage() {
                         />
 
                         <Button
-                            type="submit"
+                            type="button"
                             fullWidth
                             variant="contained"
                             size="large"

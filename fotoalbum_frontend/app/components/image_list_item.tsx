@@ -18,9 +18,9 @@ export default function ImageListItem({
     return (
         <>
             <Paper elevation={0} sx={{ 
-                border: "1px solid black", 
+                border: "1px solid grey", 
                 paddingX: 1, 
-                paddingY: 2,
+                paddingY: 1.5,
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",

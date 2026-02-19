@@ -14,5 +14,11 @@
     "cancel": "Mégse",
     "upload": "Feltöltés",
     "name": "Név",
-    "date": "Dátum"
+    "date": "Dátum",
+    "user_with_this_email_already_exists": "Már létezik felhasználó ezzel az email-címmel!",
+    "register_success": "Sikeres regisztráció!",
+    "image": {
+        "upload_success": "Képfeltöltés sikeres!",
+        "couldnt_fetch": "Nem sikerült betölteni a képeket"
+    }
 }

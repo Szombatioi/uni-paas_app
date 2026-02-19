@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const auth_api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8888",
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001/api",
   withCredentials: true, // TODO optional: if you use cookies/auth
   headers: {
     "Content-Type": "application/json",
@@ -15,10 +15,10 @@ export const validate = async (): Promise<boolean> => {
     return false;
   }
 
-  auth_api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
   try {
-    const res = await auth_api.get("/me", {
+    const res = await api.get("/auth/me", {
       headers: { Authorization: `Bearer ${token}` },
     });
     return true;
@@ -32,10 +32,10 @@ export const validate = async (): Promise<boolean> => {
 export function setAuthToken(token: string | null) {
   if (token) {
     localStorage.setItem("token", token);
-    auth_api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
     localStorage.removeItem("token");
-    delete auth_api.defaults.headers.common["Authorization"];
+    delete api.defaults.headers.common["Authorization"];
   }
 }
 
@@ -48,4 +48,4 @@ export function getAuthToken(): string | null {
   return localStorage.getItem("token");
 }
 
-export default auth_api;
+export default api;

@@ -15,18 +15,18 @@ import { SeederModule } from './seed/seeder.module';
       envFilePath: '.env',
     }),
     JwtModule.registerAsync({
-  global: true,
-  imports: [ConfigModule],
-  inject: [ConfigService],
-  useFactory: async (configService: ConfigService) => {
-    const secret = configService.get<string>('JWT_SECRET');
-    // console.log('JWT_SECRET loaded:', secret ? 'YES (exists)' : 'NO (undefined)'); 
-    return {
-      secret: secret,
-      signOptions: { expiresIn: '48h' },
-    };
-  },
-}),
+      global: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
+        // console.log('JWT_SECRET loaded:', secret ? 'YES (exists)' : 'NO (undefined)'); 
+        return {
+          secret: secret,
+          signOptions: { expiresIn: '48h' },
+        };
+      },
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

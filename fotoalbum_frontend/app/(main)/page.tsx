@@ -2,15 +2,19 @@
 import { Box, Button, ButtonGroup, Fab, Paper, Typography } from "@mui/material";
 import Image from "next/image";
 import ImageListItem from "../components/image_list_item";
-import { useEffect, useState } from "react";
-import { Add } from "@mui/icons-material";
+import { useEffect, useRef, useState } from "react";
+import { Add, ImageNotSupportedTwoTone } from "@mui/icons-material";
 import { useDialog } from "../contexts/dialog-context";
-import UploadDialog from "../dialogs/upload_image.dialog";
+import UploadDialog from "../components/dialogs/upload_image.dialog";
 import { AsyncCallbackSet } from "next/dist/server/lib/async-callback-set";
 import { useTranslation } from "react-i18next";
+import api from "@/axios/auth-axios";
+import { Severity, useSnackbar } from "../contexts/snackbar-provider";
+import { ImageDto } from "../components/dto/image.dto";
 
 export default function Home() {
   const { t } = useTranslation("common");
+  const { showMessage } = useSnackbar();
   const [firstLoad, setFirstLoad] = useState(true);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
@@ -20,28 +24,52 @@ export default function Home() {
     { label: t("date"), value: "date" },
   ];
 
-  const [images, setImages] = useState<any[]>([]); //TODO: define type
+  const [images, setImages] = useState<ImageDto[]>([]); //TODO: define type
+  const imagesRef = useRef<ImageDto[]>([]);
 
-  const uploadImage = async (file: File) => {
-    
+  const uploadImage = async (file: File, imageName: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", imageName);
+
+    try {
+      await api.post("/image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      showMessage(t("image.upload_success", Severity.success));
+    } catch (err) {
+
+    }
   };
 
   useEffect(() => {
-    //TODO: fetch images or if already fetched, sort them
-    if (firstLoad) {
-      //TODO: fetch + sort images
-      setFirstLoad(false);
-    } else {
-      //TODO: sort images
+    async function fetchImages() {
+      if (firstLoad) {
+        try {
+          const res = await api.get<ImageDto[]>("/images");
+          setImages(res.data);
+          imagesRef.current = res.data;
+          sortImages();
+        } catch (err) {
+          showMessage(t("image.couldnt_fetch"));
+          return;
+        }
+        setFirstLoad(false);
+      } else {
+        sortImages();
+      }
+
+
     }
+    fetchImages();
   }, [sortBy]);
 
   //TODO: check if good
-  const sortImages = (images: any[]) => {
+  const sortImages = () => {
     if (sortBy === "name") {
-      return images.sort((a, b) => a.name.localeCompare(b.name));
+      return imagesRef.current.sort((a, b) => a.name.localeCompare(b.name));
     } else {
-      return images.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      return imagesRef.current.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }
   }
 
@@ -62,8 +90,16 @@ export default function Home() {
         </ButtonGroup>
 
         {/* List */}
-        <Paper>
-
+        <Paper sx={{display: "flex", flexDirection: "column", gap: 0.25, p: 2}}>
+          {images.map((img, index) => (
+            <ImageListItem
+              key={index}
+              fileName={img.fileName}
+              name={img.name}
+              date={img.date}
+              action={(filename: string) => { }}
+            />
+          ))}
         </Paper>
 
         <Fab onClick={() => {
@@ -75,7 +111,7 @@ export default function Home() {
         <UploadDialog
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}
-          onSubmit={(file: File) => uploadImage(file)}
+          onSubmit={(file: File, name: string) => uploadImage(file, name)}
         />
       </Box>
     </>

@@ -19,7 +19,7 @@ export default function LoginPage() {
     try {
       await login({ email, password });
       showMessage(t("login_success"));
-      router.replace("/");
+      router.push("/");
     } catch (err) {
       console.log(err);
       showMessage(t("login_fail"), Severity.error);

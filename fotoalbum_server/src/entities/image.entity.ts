@@ -6,7 +6,7 @@ export class Image {
     //The flow is like this: 
         //When uploading a file, we first upload it to minio
         //Then we create the image entity with the unique filename
-    @PrimaryColumn('uuid')
+    @PrimaryColumn()
     fileName: string; 
 
     @Column({unique: false, nullable: false})

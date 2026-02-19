@@ -24,13 +24,13 @@ export class UserService {
     if (!createUserDto.email || !createUserDto.password) {
       throw new BadRequestException('Email and password are required');
     }
-
+    
     //Check for user with the same email
     const existingUser = await this.findByEmail(createUserDto.email);
     if (existingUser) {
-      throw new BadRequestException('User with this email already exists');
+      throw new BadRequestException('user_with_this_email_already_exists');
     }
-
+    
     //Check for user with the same username
     if (createUserDto.username) {
       const existingUsername = await this.userRepository.findOne({ where: { username: createUserDto.username } });

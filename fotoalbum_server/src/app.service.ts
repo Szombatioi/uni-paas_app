@@ -15,7 +15,7 @@ export class AppService {
     async uploadImage(file: Express.Multer.File, data: ImageDto){
         //Step 1.: upload to the storage
         const fileName = await this.storageService.uploadFile(
-            file.filename,
+            file.originalname,
             file.buffer,
             file.mimetype
         );

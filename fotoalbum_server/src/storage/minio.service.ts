@@ -35,27 +35,31 @@ export class StorageService {
     }
 
 
-    async uploadFile(fileName: string, file: Buffer, mimeType: string){
+    async uploadFile(fileName: string, file: Buffer, mimeType: string) {
         //All files must be of type image
         if (!mimeType.startsWith('image/')) {
             throw new BadRequestException('Only image files are allowed');
         }
+        
+        const timestamp = Date.now();
+        const lastDotIndex = fileName.lastIndexOf(".");
+        const namePart = fileName.substring(0, lastDotIndex); 
+        const extPart = fileName.substring(lastDotIndex);
 
-        //Creating a unique name to avoid conflicts
-        const storedName = fileName + new Date().getTime();
+        const storedName = `${namePart}_${timestamp}${extPart}`;
         await this.minioClient.putObject(
-            this.bucketName, 
+            this.bucketName,
             storedName,
-            file, 
+            file,
             file.length,
-            {'Content-Type': mimeType}
+            { 'Content-Type': mimeType }
         );
 
         return storedName;
     }
 
-    async downloadFile(fileName: string){
-        try{
+    async downloadFile(fileName: string) {
+        try {
             // Check if file exsits
             await this.minioClient.statObject(this.bucketName, fileName);
 
@@ -66,7 +70,7 @@ export class StorageService {
         }
     }
 
-    async deleteFile(fileName: string){
+    async deleteFile(fileName: string) {
         await this.minioClient.removeObject(this.bucketName, fileName);
     }
 }
