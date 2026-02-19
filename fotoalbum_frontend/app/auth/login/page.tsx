@@ -13,13 +13,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     try {
-      login({ email, password });
+      await login({ email, password });
       router.replace("/");
     } catch (err) {
       console.log(err);
-      showMessage(`Nem sikerült bejelentkezni: ${err}`, Severity.error);
+      showMessage(`Nem sikerült bejelentkezni!`, Severity.error);
     }
   };
 
@@ -49,7 +49,13 @@ export default function LoginPage() {
             Bejelentkezés
           </Typography>
 
-          <Box component="form" sx={{ mt: 3, width: '100%' }}>
+          <Box
+            component="form"
+            sx={{ mt: 3, width: '100%' }}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await handleLogin();
+            }}>
             <TextField
               margin="normal"
               required

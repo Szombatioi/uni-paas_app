@@ -4,5 +4,6 @@
     "email_required": "Adja meg az email-címét!",
     "password_required": "Adja meg a jelszavát!",
     "password_again_required": "Adja meg újra a jelszavát!",
-    "passwords_do_not_match": "Nem egyeznek a jelszavak!"
+    "passwords_do_not_match": "Nem egyeznek a jelszavak!",
+    "register_error": "Hiba a regisztrációval!"
 }

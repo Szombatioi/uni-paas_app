@@ -3,6 +3,7 @@
 import { ThemeProvider } from "@emotion/react";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import theme from "../themes/main_theme";
+import { SnackbarProvider } from "../contexts/snackbar-provider";
 
 export default function AuthLayout({
     children,
@@ -14,10 +15,12 @@ export default function AuthLayout({
             <body>
                 <AppRouterCacheProvider>
                     <ThemeProvider theme={theme}>
-                        <div className="min-h-screen bg-gray-50">
-                            {children}
+                        <SnackbarProvider>
+                            <div className="min-h-screen bg-gray-50">
+                                {children}
 
-                        </div>
+                            </div>
+                        </SnackbarProvider>
                     </ThemeProvider>
                 </AppRouterCacheProvider>
             </body>

@@ -1,5 +1,6 @@
 "use client";
-import { useSnackbar } from "@/app/contexts/snackbar-provider";
+import { Severity, useSnackbar } from "@/app/contexts/snackbar-provider";
+import { register } from "@/axios/auth-functions";
 import { Box, Button, Container, Link, Paper, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -15,8 +16,9 @@ export default function RegisterPage() {
     const [passwordAgain, setPasswordAgain] = useState("");
 
     const { showMessage } = useSnackbar();
+    const router = useRouter();
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         if (firstName.length === 0) {
             showMessage(t("first_name_required"));
             return;
@@ -42,7 +44,17 @@ export default function RegisterPage() {
             return;
         }
 
-        //TODO: call axios register function
+        try{
+            const res = await register({
+                firstName,
+                lastName,
+                email,
+                password
+            });
+            router.replace("/");
+        } catch(err){
+            showMessage(t("register_error"), Severity.error);
+        }
     };
 
     return (
@@ -139,8 +151,6 @@ export default function RegisterPage() {
                             value={passwordAgain}
                             onChange={(e) => setPasswordAgain(e.target.value)}
                         />
-
-
 
                         <Button
                             type="submit"

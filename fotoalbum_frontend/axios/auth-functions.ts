@@ -1,7 +1,20 @@
-import auth_api, { setAuthToken } from "./auth-axios";
+import { useRouter } from "next/navigation";
+import auth_api, { removeAuthToken, setAuthToken } from "./auth-axios";
 
-const register = () => {
+export interface RegisterProps{
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+};
 
+export async function register(data: RegisterProps) {
+    try{
+        const res = await auth_api.post("/register", data);
+        setAuthToken(res.data);
+    } catch (err) {
+        throw err;
+    }
 };
 
 export interface LoginProps {
@@ -17,3 +30,7 @@ export async function login({ email, password }: LoginProps) {
         throw err;
     }
 };
+
+export function logout(){
+    removeAuthToken();    
+}
