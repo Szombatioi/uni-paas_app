@@ -18,6 +18,7 @@ export class UserController {
   @Post('login')
   async login(@Body() loginDto: LoginDto){
     try{
+      console.log("Login called")
       return this.userService.login(loginDto);
     } catch (error) {
       throw error;
@@ -44,6 +45,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get("me")
   getMe(@Req() req) {
+    console.log("Token validation called")
     return req.user;
   }
 

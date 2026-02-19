@@ -1,9 +1,9 @@
 "use client";
 
+import { validate } from "@/axios/auth-axios";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
-import api, { validate } from "../../axios";
 
 export interface User {
   id: string;
@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const validateAuth = async () => {
+      
       const isValid = await validate();
       if (!isValid && !pathname.includes('/auth')) {
         router.push(`/auth/login`);
@@ -42,9 +43,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       setLoading(false);
     };
-
-
-
 
     validateAuth();
   }, [pathname, router]);

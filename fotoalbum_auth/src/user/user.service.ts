@@ -61,13 +61,16 @@ export class UserService {
   }
 
   async login(loginDto: LoginDto) {
+    
     const user = await this.findByEmail(loginDto.email);
     if (!user) {
+      console.log("user not found")
       throw new NotFoundException('User not found');
     }
 
     const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
     if (!isPasswordValid) {
+      console.log("password invalid")
       throw new UnauthorizedException('Invalid credentials');
     }
 

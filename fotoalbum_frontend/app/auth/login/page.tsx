@@ -1,18 +1,30 @@
 "use client";
+import { Severity, useSnackbar } from "@/app/contexts/snackbar-provider";
+import auth_api from "@/axios/auth-axios";
+import { login } from "@/axios/auth-functions";
 import { Box, Button, Container, Link, Paper, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+  const { showMessage } = useSnackbar();
+  const router = useRouter()
 
-    const handleLogin = () => {
-        //TODO: call axios login function
-    };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    return (
-        <Box
+  const handleLogin = () => {
+    try {
+      login({ email, password });
+      router.replace("/");
+    } catch (err) {
+      console.log(err);
+      showMessage(`Nem sikerült bejelentkezni: ${err}`, Severity.error);
+    }
+  };
+
+  return (
+    <Box
       sx={{
         minHeight: '100vh',
         display: 'flex',
@@ -22,13 +34,12 @@ export default function LoginPage() {
       }}
     >
       <Container maxWidth="sm">
-        {/* The "Paper" component creates the elevated card effect */}
-        <Paper 
-          elevation={4} 
-          sx={{ 
-            p: 4, 
-            display: 'flex', 
-            flexDirection: 'column', 
+        <Paper
+          elevation={4}
+          sx={{
+            p: 4,
+            display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             borderRadius: 3
           }}
@@ -37,7 +48,7 @@ export default function LoginPage() {
             {/* {t('login')} */}
             Bejelentkezés
           </Typography>
-          
+
           <Box component="form" sx={{ mt: 3, width: '100%' }}>
             <TextField
               margin="normal"
@@ -65,7 +76,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            
+
             <Button
               type="submit"
               fullWidth
@@ -77,7 +88,7 @@ export default function LoginPage() {
               {/* {t('login')} */}
               Bejelentkezés
             </Button>
-            
+
             <Box sx={{ textAlign: 'center', mt: 1 }}>
               <Link href="/auth/register" variant="body2" underline="hover">
                 {/* {t('no_account_q')} {t('sign_up')} */}
@@ -88,5 +99,5 @@ export default function LoginPage() {
         </Paper>
       </Container>
     </Box>
-    );
+  );
 }

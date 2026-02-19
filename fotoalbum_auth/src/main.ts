@@ -6,6 +6,13 @@ async function bootstrap() {
   console.log(__dirname)
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: [
+      "http://localhost:3000"
+    ], //any origin allowed
+    credentials: true
+  });
+
   const seederService = app.get(SeederService);
   await seederService.seed();
 

@@ -1,0 +1,8 @@
+{
+    "first_name_required": "Vezetéknév megadása kötelező!",
+    "last_name_required": "Keresztnév megadása kötelező!",
+    "email_required": "Adja meg az email-címét!",
+    "password_required": "Adja meg a jelszavát!",
+    "password_again_required": "Adja meg újra a jelszavát!",
+    "passwords_do_not_match": "Nem egyeznek a jelszavak!"
+}
