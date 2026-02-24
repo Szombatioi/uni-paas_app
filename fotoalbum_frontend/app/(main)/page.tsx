@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, ButtonGroup, CircularProgress, Fab, IconButton, Paper, Tooltip, Typography } from "@mui/material";
+import { Alert, Box, Button, ButtonGroup, CircularProgress, Fab, IconButton, Paper, Tooltip, Typography } from "@mui/material";
 import Image from "next/image";
 import ImageListItem from "../components/image_list_item";
 import { useEffect, useRef, useState } from "react";
@@ -278,6 +278,11 @@ export default function Home() {
                       onConfirm={async () => deleteImage(selectedDeletableImage)}
                       severity="error" />
                   </>)}
+                  {user === null && (
+                    <>
+                      <Alert severity="info">{t("login_to_upload_or_delete")}</Alert>
+                    </>
+                  )}
                 </>
               )
             }

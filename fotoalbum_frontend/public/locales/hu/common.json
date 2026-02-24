@@ -33,5 +33,7 @@
     "confirm": {
         "title": "Biztos törölni akarod a képet?",
         "description": "Biztos törölni akarod a következő képet?"
-    }
+    },
+    "login_to_upload_or_delete": "Jelentkezz be a törlési és képfeltöltési funkciókhoz!",
+    "logout_success": "Kijelentkezve"
 }
