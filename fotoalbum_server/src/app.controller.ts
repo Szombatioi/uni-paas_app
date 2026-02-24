@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ImageDto } from './dto/image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -27,6 +27,12 @@ export class AppController {
   @Get("images")
   async getImages() {
     return this.appService.getImages();
+  }
+
+  @Delete("image/:fileName")
+  @UseGuards(AuthGuard)
+  async deleteImage(@Param("fileName") fileName: string){
+    return await this.appService.removeImage(fileName);
   }
 
   @Post('auth/register')

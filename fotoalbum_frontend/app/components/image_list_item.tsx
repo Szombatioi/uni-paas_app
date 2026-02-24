@@ -7,13 +7,15 @@ export interface ImageListItemProps {
     name: string;
     date: Date | string; // Engedjük meg a stringet is!
     action: (fileName: string) => void;
+    allowDelete?: boolean,
 }
 
 export default function ImageListItem({
     fileName,
     name,
     date,
-    action
+    action,
+    allowDelete = true
 }: ImageListItemProps) {
 
     // 1. Biztonságos dátumkezelés
@@ -80,19 +82,26 @@ export default function ImageListItem({
                 </Typography>
             </Box>
 
-            <Tooltip title="Törlés">
-                <IconButton
-                    onClick={() => action(fileName)}
-                    size="small"
-                    sx={{
-                        ml: 1,
-                        color: "text.disabled",
-                        "&:hover": { color: "error.main", bgcolor: "error.lighter" }
-                    }}
-                >
-                    <DeleteOutline fontSize="small" />
-                </IconButton>
-            </Tooltip>
+            {allowDelete && (
+                <>
+                    <Tooltip title="Törlés">
+                        <IconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                action(fileName);
+                            }}
+                            size="small"
+                            sx={{
+                                ml: 1,
+                                color: "text.disabled",
+                                "&:hover": { color: "error.main", bgcolor: "error.lighter" }
+                            }}
+                        >
+                            <DeleteOutline fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                </>
+            )}
         </Paper>
     );
 }

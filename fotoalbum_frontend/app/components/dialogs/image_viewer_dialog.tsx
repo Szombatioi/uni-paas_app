@@ -14,8 +14,6 @@ interface ImageViewerProps {
 }
 
 export default function ImageViewerDialog({ open, url, onClose }: ImageViewerProps) {
-    const { t } = useTranslation("common");
-    console.log(url)
     return (
         <Dialog 
             open={open} 

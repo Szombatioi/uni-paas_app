@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ImageDto } from './dto/image.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Image } from './entities/image.entity';
@@ -47,6 +47,19 @@ export class AppService {
             urlPrefix: this.objectStorageUrlPrefix, //string
             images: imageRecords                    //Image[]
         };
+    }
+
+    async removeImage(fileName: string){
+        const record = await this.imageRepository.findOneBy({fileName});
+        if(!record){
+            throw new NotFoundException("Image not found with file name: " + fileName);
+        }
+        
+        //Remove from the object storage
+        await this.storageService.deleteFile(fileName);
+
+        //Remove entry from DB
+        this.imageRepository.remove(record);
     }
 
     // async downloadSome(fileNames: string[]){
