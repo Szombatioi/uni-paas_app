@@ -20,5 +20,7 @@
     "image": {
         "upload_success": "Képfeltöltés sikeres!",
         "couldnt_fetch": "Nem sikerült betölteni a képeket"
-    }
+    },
+    "sort_desc": "Csökkenő sorrend",
+    "sort_asc": "Növekvő sorrend"
 }

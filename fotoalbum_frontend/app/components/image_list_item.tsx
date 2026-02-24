@@ -15,25 +15,27 @@ export default function ImageListItem({
     date,
     action
 }: ImageListItemProps) {
-    
+
     // 1. Biztonságos dátumkezelés
     const safeDate = new Date(date);
     const isValidDate = !isNaN(safeDate.getTime());
 
-    const formattedDate = isValidDate 
+    const formattedDate = isValidDate
         ? new Intl.DateTimeFormat('hu-HU', {
             year: 'numeric',
             month: 'short',
-            day: '2-digit'
-          }).format(safeDate)
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(safeDate)
         : "Ismeretlen dátum";
 
     return (
-        <Paper 
-            elevation={0} 
-            sx={{ 
+        <Paper
+            elevation={0}
+            sx={{
                 border: "1px solid",
-                borderColor: "divider", 
+                borderColor: "divider",
                 borderRadius: 2,
                 padding: 2,
                 mb: 1, // Adjunk neki egy kis alsó margót a listában
@@ -44,13 +46,14 @@ export default function ImageListItem({
                     backgroundColor: "action.hover",
                     boxShadow: "0px 4px 12px rgba(0,0,0,0.05)",
                     borderColor: "primary.light",
+                    cursor: "pointer"
                 },
             }}
         >
-            <Box sx={{ 
-                mr: 2, 
-                display: 'flex', 
-                alignItems: 'center', 
+            <Box sx={{
+                mr: 2,
+                display: 'flex',
+                alignItems: 'center',
                 color: 'primary.main',
                 bgcolor: 'primary.light',
                 p: 1,
@@ -61,16 +64,16 @@ export default function ImageListItem({
             </Box>
 
             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                <Typography 
-                    variant="subtitle1" 
-                    fontWeight="600" 
-                    noWrap 
+                <Typography
+                    variant="subtitle1"
+                    fontWeight="600"
+                    noWrap
                     sx={{ color: "text.primary", lineHeight: 1.2 }}
                 >
                     {name}
                 </Typography>
-                <Typography 
-                    variant="caption" 
+                <Typography
+                    variant="caption"
                     sx={{ color: "text.secondary", display: "block" }}
                 >
                     {formattedDate} • <small style={{ opacity: 0.7 }}>{fileName}</small>
@@ -78,13 +81,13 @@ export default function ImageListItem({
             </Box>
 
             <Tooltip title="Törlés">
-                <IconButton 
+                <IconButton
                     onClick={() => action(fileName)}
                     size="small"
-                    sx={{ 
+                    sx={{
                         ml: 1,
                         color: "text.disabled",
-                        "&:hover": { color: "error.main", bgcolor: "error.lighter" } 
+                        "&:hover": { color: "error.main", bgcolor: "error.lighter" }
                     }}
                 >
                     <DeleteOutline fontSize="small" />
