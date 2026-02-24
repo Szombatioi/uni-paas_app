@@ -22,6 +22,7 @@ export class StorageService {
         //We will only use one bucket for all images
         this.bucketName = this.configService.get<string>('MINIO_BUCKET')!;
         this.ensureBucketExists();
+        this.makeBucketPublic(this.bucketName);
 
         this.endpoint = this.configService.get<string>('MINIO_ENDPOINT')!;
     }
@@ -34,16 +35,37 @@ export class StorageService {
         }
     }
 
+    private async makeBucketPublic(bucketName: string) {
+        const policy = {
+            Version: '2012-10-17',
+            Statement: [
+                {
+                    Effect: 'Allow',
+                    Principal: { AWS: ['*'] },
+                    Action: ['s3:GetObject'],
+                    Resource: [`arn:aws:s3:::${bucketName}/*`],
+                },
+            ],
+        };
+
+        try {
+            await this.minioClient.setBucketPolicy(bucketName, JSON.stringify(policy));
+            console.log(`Bucket "${bucketName}" is now public.`);
+        } catch (err) {
+            console.error('Error setting bucket policy:', err);
+        }
+    }
+
 
     async uploadFile(fileName: string, file: Buffer, mimeType: string) {
         //All files must be of type image
         if (!mimeType.startsWith('image/')) {
             throw new BadRequestException('Only image files are allowed');
         }
-        
+
         const timestamp = Date.now();
         const lastDotIndex = fileName.lastIndexOf(".");
-        const namePart = fileName.substring(0, lastDotIndex); 
+        const namePart = fileName.substring(0, lastDotIndex);
         const extPart = fileName.substring(lastDotIndex);
 
         const storedName = `${namePart}_${timestamp}${extPart}`;

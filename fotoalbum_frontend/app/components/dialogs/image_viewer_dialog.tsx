@@ -9,12 +9,13 @@ import { useTranslation } from "react-i18next";
 
 interface ImageViewerProps {
     open: boolean;
+    url: string;
     onClose: () => void;
 }
 
-export default function ImageViewerDialog({ open, onClose }: ImageViewerProps) {
+export default function ImageViewerDialog({ open, url, onClose }: ImageViewerProps) {
     const { t } = useTranslation("common");
-
+    console.log(url)
     return (
         <Dialog 
             open={open} 
@@ -69,7 +70,7 @@ export default function ImageViewerDialog({ open, onClose }: ImageViewerProps) {
                 }}
             >
                 <img 
-                    src="https://placehold.co/600x400" 
+                    src={url} 
                     alt="image" 
                     onClick={(e) => e.stopPropagation()}
                     style={{

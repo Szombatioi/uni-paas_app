@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, ButtonGroup, Fab, IconButton, Paper, Tooltip, Typography } from "@mui/material";
+import { Box, Button, ButtonGroup, CircularProgress, Fab, IconButton, Paper, Tooltip, Typography } from "@mui/material";
 import Image from "next/image";
 import ImageListItem from "../components/image_list_item";
 import { useEffect, useRef, useState } from "react";
@@ -10,16 +10,17 @@ import { AsyncCallbackSet } from "next/dist/server/lib/async-callback-set";
 import { useTranslation } from "react-i18next";
 import api from "@/axios/auth-axios";
 import { Severity, useSnackbar } from "../contexts/snackbar-provider";
-import { ImageDto } from "../components/dto/image.dto";
+import { ImageDto, ImageListDto } from "../components/dto/image.dto";
 import ImageViewerDialog from "../components/dialogs/image_viewer_dialog";
 
 export default function Home() {
   const { t } = useTranslation("common");
   const { showMessage } = useSnackbar();
-  const [firstLoad, setFirstLoad] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [imageDialogOpen, setImageDialogOpen] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [urlPrefix, setUrlPrefix] = useState<string | null>(null);
 
   const [sortBy, setSortBy] = useState<"name" | "date">("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -46,27 +47,12 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    async function fetchImages() {
-      if (firstLoad) {
-        try {
-          const res = await api.get<ImageDto[]>("/images");
-          setImages(res.data);
-          imagesRef.current = res.data;
-          sortImages();
-        } catch (err) {
-          showMessage(t("image.couldnt_fetch"));
-          return;
-        }
-        setFirstLoad(false);
-      } else {
-        sortImages();
-      }
+  // useEffect(() => {
+  //   async function fetchImages() {
 
-
-    }
-    fetchImages();
-  }, [sortBy]);
+  //   }
+  //   fetchImages();
+  // }, [sortBy]);
 
   //TODO: check if good
   // const sortImages = () => {
@@ -80,6 +66,7 @@ export default function Home() {
   // }
 
   const sortImages = () => {
+    setLoading(true);
     const sortedData = [...imagesRef.current].sort((a, b) => {
       let comparison = 0;
 
@@ -94,28 +81,32 @@ export default function Home() {
     });
 
     setImages(sortedData);
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (firstLoad) {
-      async function fetchImages() {
-        try {
-          const res = await api.get<ImageDto[]>("/images");
-          imagesRef.current = res.data;
-          sortImages();
-          setFirstLoad(false);
-        } catch (err) {
-          showMessage(t("image.couldnt_fetch"), Severity.error);
-        }
+    setLoading(true);
+    async function fetchImages() {
+      try {
+        const res = await api.get<ImageListDto>("/images");
+        setImages(res.data.images);
+        imagesRef.current = res.data.images;
+        setUrlPrefix(res.data.urlPrefix);
+
+        sortImages();
+      } catch (err) {
+        console.error(err);
+        showMessage(t("image.couldnt_fetch"));
+        return;
+      } finally{
+        setLoading(false);
       }
-      fetchImages();
-    } else {
-      sortImages();
     }
+    fetchImages();
   }, [sortBy, sortOrder]);
 
   const openImage = (filename: string) => {
-    setSelectedImage(filename);
+    setSelectedImage(urlPrefix + filename);
     setImageDialogOpen(true);
   };
 
@@ -152,38 +143,54 @@ export default function Home() {
           </Tooltip>
         </Box>
 
-        {/* List */}
-        <Paper sx={{ display: "flex", flexDirection: "column", gap: 0.25, p: 2 }}>
-          {images.map((img, index) => (
-            <div
-              key={index}
-              onClick={() => { openImage(img.fileName); console.log("Image opened") }}>
-              <ImageListItem
-                fileName={img.fileName}
-                name={img.name}
-                date={img.date}
-                action={(fileName: string) => { /*TODO: remove image*/ }}
+        {
+          loading ? (
+            <>
+              <Box sx={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                <CircularProgress />
+              </Box>
+            </>
+          ) : (
+            <>
+              {/* List */}
+              <Paper sx={{ display: "flex", flexDirection: "column", gap: 0.25, p: 2 }}>
+                {images.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() => { openImage(img.fileName); console.log("Image opened") }}>
+                    <ImageListItem
+                      fileName={img.fileName}
+                      name={img.name}
+                      date={img.date}
+                      action={(fileName: string) => { /*TODO: remove image*/ }}
+                    />
+                  </div>
+                ))}
+              </Paper>
+
+              <Fab onClick={() => {
+                setDialogOpen(true)
+              }} size="large" color="primary" sx={{ position: "absolute", bottom: 15, right: 15 }}>
+                <Add />
+              </Fab>
+
+              <UploadDialog
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+                onSubmit={(file: File, name: string) => uploadImage(file, name)}
               />
-            </div>
-          ))}
-        </Paper>
 
-        <Fab onClick={() => {
-          setDialogOpen(true)
-        }} size="large" color="primary" sx={{ position: "absolute", bottom: 15, right: 15 }}>
-          <Add />
-        </Fab>
-
-        <UploadDialog
-          open={dialogOpen}
-          onClose={() => setDialogOpen(false)}
-          onSubmit={(file: File, name: string) => uploadImage(file, name)}
-        />
-
-        <ImageViewerDialog
-          open={imageDialogOpen}
-          onClose={() => closeImage()}
-        />
+              {selectedImage && (
+                <>
+                  <ImageViewerDialog
+                    open={imageDialogOpen}
+                    url={selectedImage}
+                    onClose={() => closeImage()}
+                  />
+                </>)}
+            </>
+          )
+        }
       </Box>
     </>
   );
