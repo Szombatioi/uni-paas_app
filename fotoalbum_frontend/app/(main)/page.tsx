@@ -78,7 +78,8 @@ export default function Home() {
       await fetchImages();
       showMessage(t("image.upload_success", Severity.success));
     } catch (err) {
-      showMessage(t("image.upload_fail", Severity.error));
+      // showMessage(t("image.upload_fail", Severity.error));
+      showMessage(t("image_name_too_long"), Severity.error);
     } finally {
       setStateLoading(false);
     }

@@ -78,7 +78,7 @@ export default function ImageListItem({
                     variant="caption"
                     sx={{ color: "text.secondary", display: "block" }}
                 >
-                    {formattedDate} • <small style={{ opacity: 0.7 }}>{fileName}</small>
+                    {formattedDate} {/*• <small style={{ opacity: 0.7 }}>{fileName}</small>*/}
                 </Typography>
             </Box>
 

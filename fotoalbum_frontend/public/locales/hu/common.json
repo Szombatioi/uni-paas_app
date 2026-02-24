@@ -35,5 +35,6 @@
         "description": "Biztos törölni akarod a következő képet?"
     },
     "login_to_upload_or_delete": "Jelentkezz be a törlési és képfeltöltési funkciókhoz!",
-    "logout_success": "Kijelentkezve"
+    "logout_success": "Kijelentkezve",
+    "image_name_too_long": "Túl hosszú a kép neve! (max 40 karakter!)"
 }

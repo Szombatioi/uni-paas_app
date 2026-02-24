@@ -1,3 +1,4 @@
+import { MaxLength } from "class-validator";
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
@@ -7,9 +8,9 @@ export class Image {
         //When uploading a file, we first upload it to minio
         //Then we create the image entity with the unique filename
     @PrimaryColumn()
-    fileName: string; 
+    fileName: string;
 
-    @Column({unique: false, nullable: false})
+    @Column({ unique: false, nullable: false })
     name: string;
 
     @CreateDateColumn()

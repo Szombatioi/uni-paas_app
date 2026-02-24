@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ImageDto } from './dto/image.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Image } from './entities/image.entity';
@@ -24,6 +24,8 @@ export class AppService {
     }
 
     async uploadImage(file: Express.Multer.File, data: ImageDto){
+        if(data.name.length > 40) throw new BadRequestException("image_name_too_long");
+
         //Step 1.: upload to the storage
         const fileName = await this.storageService.uploadFile(
             file.originalname,

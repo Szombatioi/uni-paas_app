@@ -23,7 +23,7 @@ export default function RootLayout({
         style={{ margin: 0 }}
       >
         <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
+          {/* <ThemeProvider theme={theme}> */}
             <AuthProvider>
               <LanguageProvider>
                 <SnackbarProvider>
@@ -35,7 +35,7 @@ export default function RootLayout({
                 </SnackbarProvider>
               </LanguageProvider>
             </AuthProvider>
-          </ThemeProvider>
+          {/* </ThemeProvider> */}
         </AppRouterCacheProvider>
       </body>
     </html >
