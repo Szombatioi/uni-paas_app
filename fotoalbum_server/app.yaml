@@ -1,0 +1,21 @@
+runtime: custom
+env: flex 
+
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
+
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 2
+
+beta_settings:
+  cloud_sql_instances: "project-ef150698-8de6-49cc-9e8:us-central1:free-trial-uni-project"
+
+env_variables:
+  DB_HOST: "project-ef150698-8de6-49cc-9e8:us-central1:free-trial-uni-project"
+  DB_USERNAME: "DB_USERNAME_PLACEHOLDER"
+  DB_PASSWORD: "DB_PASSWORD_PLACEHOLDER"
+  DB_DATABASE: "fotoalbum-db"
+  JWT_SECRET: "JWT_SECRET_PLACEHOLDER"

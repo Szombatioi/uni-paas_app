@@ -1,0 +1,51 @@
+name: Deploy to AppEngine
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: #to enable manual workflow start
+
+permissions:
+  contents: 'read'
+  id-token: 'write' # To generate OIDC tokens
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: '${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}'
+          service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
+      
+      - name: Injecting secrets too app.yaml files
+        run: |
+          sed -i "s/DB_USERNAME_PLACEHOLDER/${{ secrets.DB_USERNAME }}/g" fotoalbum_auth/app.yaml
+          sed -i "s/DB_PASSWORD_PLACEHOLDER/${{ secrets.DB_PASSWORD }}/g" fotoalbum_auth/app.yaml
+          sed -i "s/JWT_SECRET_PLACEHOLDER/${{ secrets.JWT_SECRET }}/g" fotoalbum_auth/app.yaml
+          sed -i "s/DB_USERNAME_PLACEHOLDER/${{ secrets.DB_USERNAME }}/g" fotoalbum_server/app.yaml
+          sed -i "s/DB_PASSWORD_PLACEHOLDER/${{ secrets.DB_PASSWORD }}/g" fotoalbum_server/app.yaml
+          sed -i "s/JWT_SECRET_PLACEHOLDER/${{ secrets.JWT_SECRET }}/g" fotoalbum_server/app.yaml
+      
+      - name: Deploy Frontend
+        uses: google-github-actions/deploy-appengine@v1
+        with:
+          working_directory: fotoalbum_frontend
+          deliverables: app.yaml
+          
+      - name: Deploy Auth service
+        uses: google-github-actions/deploy-appengine@v1
+        with: 
+          working_directory: fotoalbum_auth
+          deliverables: app.yaml
+      
+      - name: Deploy Backend Service
+        uses: google-github-actions/deploy-appengine@v1
+        with:
+          working_directory: fotoalbum_server
+          deliverables: app.yaml
