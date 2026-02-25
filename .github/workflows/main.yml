@@ -35,7 +35,7 @@ jobs:
 
           envsubst < fotoalbum_auth/app.yaml > fotoalbum_auth/auth.yaml
           envsubst < fotoalbum_server/app.yaml > fotoalbum_server/server.yaml
-          cp deploy/frontend.yaml fotoalbum_frontend/frontend.yaml
+          # cp deploy/frontend.yaml fotoalbum_frontend/frontend.yaml
           # ls -a
 
           # sed -i "s/DB_USERNAME_PLACEHOLDER/${{ secrets.DB_USERNAME }}/g" fotoalbum_auth/app.yaml
