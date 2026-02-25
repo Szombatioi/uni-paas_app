@@ -33,10 +33,10 @@ jobs:
           export MINIO_ACCESS="${{ secrets.MINIO_ACCESS }}"
           export MINIO_SECRET="${{ secrets.MINIO_SECRET }}"
 
-          envsubst < fotoalbum_auth/app.yaml > auth.yaml
-          envsubst < fotoalbum_server/app.yaml > server.yaml
-          cp fotoalbum_frontend/app.yaml frontend.yaml
-          ls -a
+          envsubst < fotoalbum_auth/app.yaml > fotoalbum_auth/auth.yaml
+          envsubst < fotoalbum_server/app.yaml > fotoalbum_server/server.yaml
+          cp deploy/frontend.yaml fotoalbum_frontend/frontend.yaml
+          # ls -a
 
           # sed -i "s/DB_USERNAME_PLACEHOLDER/${{ secrets.DB_USERNAME }}/g" fotoalbum_auth/app.yaml
           # sed -i "s/DB_PASSWORD_PLACEHOLDER/${{ secrets.DB_PASSWORD }}/g" fotoalbum_auth/app.yaml
