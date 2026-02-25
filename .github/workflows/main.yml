@@ -32,6 +32,12 @@ jobs:
           sed -i "s/DB_PASSWORD_PLACEHOLDER/${{ secrets.DB_PASSWORD }}/g" fotoalbum_server/app.yaml
           sed -i "s/JWT_SECRET_PLACEHOLDER/${{ secrets.JWT_SECRET }}/g" fotoalbum_server/app.yaml
       
+      - name: Deploy Frontend
+        uses: google-github-actions/deploy-appengine@v1
+        with:
+          working_directory: fotoalbum_frontend
+          deliverables: app.yaml
+          
       - name: Deploy Auth service
         uses: google-github-actions/deploy-appengine@v1
         with: 
@@ -42,10 +48,4 @@ jobs:
         uses: google-github-actions/deploy-appengine@v1
         with:
           working_directory: fotoalbum_server
-          deliverables: app.yaml
-      
-      - name: Deploy Frontend
-        uses: google-github-actions/deploy-appengine@v1
-        with:
-          working_directory: fotoalbum_frontend
           deliverables: app.yaml
