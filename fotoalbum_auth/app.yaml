@@ -1,11 +1,15 @@
-runtime: nodejs22
-service: auth-service
+runtime: custom
+env: flex
+
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
 
 automatic_scaling:
-  target_cpu_utilization: 0.65
-  min_instances: 0
-  max_instances: 1
-
+  min_num_instances: 1
+  max_num_instances: 2
+  
 beta_settings:
   cloud_sql_instances: "project-ef150698-8de6-49cc-9e8:us-central1:fotoalbum-auth"
 
