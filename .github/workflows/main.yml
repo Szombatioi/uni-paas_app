@@ -1,67 +1,22 @@
-name: Deploy to AppEngine
-
+name: Deploy to Render
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch: # To enable manual workflow start
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      id-token: 'write' # To generate OIDC tokens
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: '${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}'
-          service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
-      
-      - name: Injecting secrets too app.yaml files
-        run: |
-          sudo apt-get install gettext -y
+        uses: actions/checkout@v4
 
-          export JWT_SECRET="${{ secrets.JWT_SECRET }}"
-          export DB_USERNAME="${{ secrets.DB_USERNAME }}"
-          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
-          export MINIO_ACCESS="${{ secrets.MINIO_ACCESS }}"
-          export MINIO_SECRET="${{ secrets.MINIO_SECRET }}"
+      # Add your test steps here (npm test, etc.)
 
-          envsubst < fotoalbum_auth/app.yaml > fotoalbum_auth/auth.yaml
-          envsubst < fotoalbum_server/app.yaml > fotoalbum_server/server.yaml
-          # cp deploy/frontend.yaml fotoalbum_frontend/frontend.yaml
-          # ls -a
+      - name: Trigger Nest API 1 Deploy
+        run: curl -X POST ${{ secrets.RENDER_AUTH_HOOK }}
 
-          # sed -i "s/DB_USERNAME_PLACEHOLDER/${{ secrets.DB_USERNAME }}/g" fotoalbum_auth/app.yaml
-          # sed -i "s/DB_PASSWORD_PLACEHOLDER/${{ secrets.DB_PASSWORD }}/g" fotoalbum_auth/app.yaml
-          # sed -i "s/JWT_SECRET_PLACEHOLDER/${{ secrets.JWT_SECRET }}/g" fotoalbum_auth/app.yaml
-          # sed -i "s/DB_USERNAME_PLACEHOLDER/${{ secrets.DB_USERNAME }}/g" fotoalbum_server/app.yaml
-          # sed -i "s/DB_PASSWORD_PLACEHOLDER/${{ secrets.DB_PASSWORD }}/g" fotoalbum_server/app.yaml
-          # sed -i "s/JWT_SECRET_PLACEHOLDER/${{ secrets.JWT_SECRET }}/g" fotoalbum_server/app.yaml
-      
-      - name: Deploy Frontend
-        uses: google-github-actions/deploy-appengine@v2
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          deliverables: app.yaml
-          working_directory: ./fotoalbum_frontend/
-          
-      - name: Deploy Auth service
-        uses: google-github-actions/deploy-appengine@v2
-        with: 
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          deliverables: auth.yaml
-          working_directory: ./fotoalbum_auth/
-      
-      - name: Deploy Backend Service
-        uses: google-github-actions/deploy-appengine@v1
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          deliverables: server.yaml
-          working_directory: ./fotoalbum_server/
+      - name: Trigger Nest API 2 Deploy
+        run: curl -X POST ${{ secrets.RENDER_BACKEND_HOOK }}
+
+      - name: Trigger Next.js Deploy
+        run: curl -X POST ${{ secrets.RENDER_FRONTEND_HOOK }}

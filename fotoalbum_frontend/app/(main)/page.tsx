@@ -148,6 +148,7 @@ export default function Home() {
   const openImage = (filename: string) => {
     setSelectedImage(urlPrefix + filename);
     setImageDialogOpen(true);
+    console.log(urlPrefix+filename)
   };
 
   const closeImage = () => {

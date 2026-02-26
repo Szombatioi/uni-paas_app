@@ -16,6 +16,6 @@ async function bootstrap() {
   const seederService = app.get(SeederService);
   await seederService.seed();
 
-  await app.listen(process.env.PORT ?? 8888);
+  await app.listen(process.env.PORT ?? 8888, "0.0.0.0");
 }
 bootstrap();

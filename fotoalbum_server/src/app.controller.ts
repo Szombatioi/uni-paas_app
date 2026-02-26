@@ -50,6 +50,7 @@ export class AppController {
   @UseGuards(AuthGuard)
   @Get("auth/me")
   getMe(@Req() req) {
+    console.log("Auth me: ", req.user)
     return req.user;
   }
 

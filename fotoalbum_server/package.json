@@ -20,6 +20,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@azure/identity": "^4.13.0",
+    "@azure/storage-blob": "^12.31.0",
+    "@google-cloud/storage": "^7.19.0",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",
@@ -30,6 +33,7 @@
     "@types/multer": "^2.0.0",
     "class-validator": "^0.14.3",
     "minio": "^8.0.6",
+    "mssql": "^12.2.0",
     "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",

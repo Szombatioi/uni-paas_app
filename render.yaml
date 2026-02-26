@@ -1,0 +1,33 @@
+services:
+  # NestJS Service 1
+  - type: web
+    name: fotoalbum_auth
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./services/fotoalbum_auth/Dockerfile
+    envVars:
+      - key: PORT
+        value: 8888
+
+  # NestJS Service 2
+  - type: web
+    name: fotoalbum_server
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./services/fotoalbum_server/Dockerfile
+    envVars:
+      - key: PORT
+        value: 3001
+
+  # Next.js Frontend
+  - type: web
+    name: fotoalbum_frontend
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./apps/fotoalbum_frontend/Dockerfile
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: fotoalbum_server
+          type: web
+          property: host

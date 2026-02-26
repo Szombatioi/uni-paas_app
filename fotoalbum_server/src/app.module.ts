@@ -18,9 +18,10 @@ import { AuthProxyModule } from './auth_proxy/auth-proxy.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
+        type: configService.get<any>("DB_TYPE") || 'mssql',
         host: configService.get<string>('DB_HOST') || 'localhost',
-        port: configService.get<number>('DB_PORT') || 5432,
+        // port: configService.get<number>('DB_PORT') || 5432,
+        port: parseInt(configService.get<string>('DB_PORT', '1433'), 10),
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),

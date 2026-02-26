@@ -16,10 +16,10 @@ export class AppService {
         @Inject() private readonly storageService: StorageService,
         private configService: ConfigService
     ){
-        const s3Protocol = this.configService.get<string>('MINIO_PROTOCOL')!;
-        const s3Url = this.configService.get<string>('MINIO_ENDPOINT')!;
-        const s3Port = this.configService.get<string>('MINIO_PORT')!;
-        const bucketName = this.configService.get<string>('MINIO_BUCKET')!
+        const s3Protocol = this.configService.get<string>('S3_PROTOCOL')!;
+        const s3Url = this.configService.get<string>('S3_ENDPOINT')!;
+        const s3Port = this.configService.get<string>('S3_PORT')!;
+        const bucketName = this.configService.get<string>('S3_BUCKET')!
         this.objectStorageUrlPrefix = `${s3Protocol}://${s3Url}:${s3Port}/${bucketName}/`;
     }
 

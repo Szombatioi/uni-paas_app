@@ -1,6 +1,6 @@
 //TEST! TODO: delete this controller!
 //Reuse parameters from endpoints
-import { Controller, Get, UploadedFile, Post, UseInterceptors, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, UploadedFile, Post, UseInterceptors, Param, Delete, Res, NotFoundException } from '@nestjs/common';
 import type { Response } from 'express';
 import { StorageService } from './minio.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -24,6 +24,9 @@ export class StorageController {
         try {
             const stream = await this.storageService.downloadFile(filename);
 
+            if (!stream) {
+                throw new NotFoundException('File stream is unavailable');
+            }
 
             //For opening
             res.setHeader('Content-Type', 'image/png');

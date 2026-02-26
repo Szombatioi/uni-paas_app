@@ -33,7 +33,8 @@ import { SeederModule } from './seed/seeder.module';
       useFactory: (configService: ConfigService): TypeOrmModuleOptions => ({
         type: (configService.get<string>('DB_TYPE', 'postgres') as any),
         host: configService.get<string>('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5432),
+        // port: configService.get<number>('DB_PORT', 5432),
+        port: parseInt(configService.get<string>('DB_PORT', '1433'), 10),
         username: configService.get<string>('DB_USERNAME', 'auth_admin'),
         password: configService.get<string>('DB_PASSWORD', 'auth_admin'),
         database: configService.get<string>('DB_DATABASE', 'auth_db'),
