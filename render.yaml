@@ -1,4 +1,28 @@
-# Next.js Frontend
+services:
+  - type: web
+    name: fotoalbum_auth
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./fotoalbum_auth/Dockerfile
+    # plan: starter # ONLY ALLOW THESE IF YOU WANT SCALING
+    # scaling:
+    #   minInstances: 1
+    #   maxInstances: 2
+    #   targetCPUPercent: 60
+    #   targetMemoryPercent: 60
+    
+  - type: web
+    name: fotoalbum_server
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./fotoalbum_server/Dockerfile
+    # plan: starter # ONLY ALLOW THESE IF YOU WANT SCALING
+    # scaling:
+    #   minInstances: 1
+    #   maxInstances: 3
+    #   targetCPUPercent: 60
+    #   targetMemoryPercent: 60
+
   - type: web
     name: fotoalbum_frontend
     runtime: docker
