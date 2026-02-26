@@ -4,7 +4,7 @@ services:
     name: fotoalbum_auth
     runtime: docker
     dockerContext: .
-    dockerfilePath: ./services/fotoalbum_auth/Dockerfile
+    dockerfilePath: ./fotoalbum_auth/Dockerfile # Removed "services/"
     envVars:
       - key: PORT
         value: 8888
@@ -14,7 +14,7 @@ services:
     name: fotoalbum_server
     runtime: docker
     dockerContext: .
-    dockerfilePath: ./services/fotoalbum_server/Dockerfile
+    dockerfilePath: ./fotoalbum_server/Dockerfile # Removed "services/"
     envVars:
       - key: PORT
         value: 3001
@@ -24,10 +24,12 @@ services:
     name: fotoalbum_frontend
     runtime: docker
     dockerContext: .
-    dockerfilePath: ./apps/fotoalbum_frontend/Dockerfile
+    dockerfilePath: ./fotoalbum_frontend/Dockerfile # Removed "apps/"
     envVars:
+      - key: PORT
+        value: 3000
       - key: NEXT_PUBLIC_API_URL
         fromService:
           name: fotoalbum_server
           type: web
-          property: host
+          property: url # Use 'url' for browser-side requests
