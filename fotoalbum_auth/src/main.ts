@@ -3,12 +3,13 @@ import { AppModule } from './app.module';
 import { SeederService } from './seed/seeder.service';
 
 async function bootstrap() {
-  console.log(__dirname)
+  // console.log(__dirname)
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
     origin: [
-      "http://localhost:3001"
+      "http://localhost:3001",
+      "https://fotoalbum-server.onrender.com"
     ], //any origin allowed
     credentials: true
   });
