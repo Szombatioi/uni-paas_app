@@ -7,16 +7,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Add your test steps here (npm test, etc.)
-
-      - name: Trigger Nest API 1 Deploy
+      - name: Trigger Auth Deploy
         run: curl -X POST ${{ secrets.RENDER_AUTH_HOOK }}
 
-      - name: Trigger Nest API 2 Deploy
+      - name: Trigger Backend Deploy
         run: curl -X POST ${{ secrets.RENDER_BACKEND_HOOK }}
 
-      - name: Trigger Next.js Deploy
+      - name: Trigger Frontend Deploy
         run: curl -X POST ${{ secrets.RENDER_FRONTEND_HOOK }}

@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import i18n from "../i18n";
-import api from "../../axios/axios";
 import { Severity, useSnackbar } from "./snackbar-provider";
 import { useTranslation } from "react-i18next";
 
