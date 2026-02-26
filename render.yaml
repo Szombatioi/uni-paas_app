@@ -1,25 +1,4 @@
-services:
-  # 1. NestJS Auth Service
-  - type: web
-    name: fotoalbum_auth
-    runtime: docker
-    dockerContext: .
-    dockerfilePath: ./fotoalbum_auth/Dockerfile
-    envVars:
-      - key: PORT
-        value: 8888
-
-  # 2. NestJS Server Service
-  - type: web
-    name: fotoalbum_server
-    runtime: docker
-    dockerContext: .
-    dockerfilePath: ./fotoalbum_server/Dockerfile
-    envVars:
-      - key: PORT
-        value: 3001
-
-  # 3. Next.js Frontend
+# Next.js Frontend
   - type: web
     name: fotoalbum_frontend
     runtime: docker
@@ -28,7 +7,8 @@ services:
     envVars:
       - key: PORT
         value: 3000
-      - key: NEXT_PUBLIC_API_URL
+      # 👇 Updated to match your Axios code 👇
+      - key: NEXT_PUBLIC_BACKEND_URL
         fromService:
           name: fotoalbum_server
           type: web
