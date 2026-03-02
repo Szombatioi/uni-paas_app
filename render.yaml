@@ -4,7 +4,7 @@ services:
     runtime: docker
     dockerContext: .
     dockerfilePath: ./fotoalbum_auth/Dockerfile
-    # plan: starter # ONLY ALLOW THESE IF YOU WANT SCALING
+    # plan: starter
     # scaling:
     #   minInstances: 1
     #   maxInstances: 2
@@ -16,7 +16,7 @@ services:
     runtime: docker
     dockerContext: .
     dockerfilePath: ./fotoalbum_server/Dockerfile
-    # plan: starter # ONLY ALLOW THESE IF YOU WANT SCALING
+    # plan: starter
     # scaling:
     #   minInstances: 1
     #   maxInstances: 3
@@ -31,7 +31,6 @@ services:
     envVars:
       - key: PORT
         value: 3000
-      # 👇 Updated to match your Axios code 👇
       - key: NEXT_PUBLIC_BACKEND_URL
         fromService:
           name: fotoalbum_server
