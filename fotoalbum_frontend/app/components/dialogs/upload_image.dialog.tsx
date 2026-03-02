@@ -80,11 +80,24 @@ export default function UploadDialog({ open, onClose, onSubmit }: UploadDialogPr
 
                     {/* Editable filename */}
                     {selectedFile && (
-                        <TextField
-                            size="small"
-                            value={fileName}
-                            onChange={(e) => setFileName(e.target.value)}
-                        />
+                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <TextField
+                                size="small"
+                                value={fileName}
+                                onChange={(e) => setFileName(e.target.value)}
+                                error={fileName.length > 40}
+                            />
+
+                            {fileName.length > 40 && (
+                                <Typography
+                                    variant="caption"
+                                    color="error"
+                                    sx={{ mt: 0.5 }}
+                                >
+                                    {t("filename_max_40")}
+                                </Typography>
+                            )}
+                        </Box>
                     )}
 
                     {/* Remove button */}
@@ -101,7 +114,7 @@ export default function UploadDialog({ open, onClose, onSubmit }: UploadDialogPr
                 <Button
                     variant="contained"
                     onClick={handleSubmit}
-                    disabled={!selectedFile || !fileName.trim()}
+                    disabled={!selectedFile || !fileName.trim() || fileName.length > 40}
                 >
                     {t("upload")}
                 </Button>
