@@ -10,6 +10,7 @@ import { LoginDto } from './dto/login.dto';
 import { UserRole } from 'src/user-role/entity/user-role.entity';
 import { UserRoleService } from 'src/user-role/entity/user-role.service';
 import { RelationIdMetadataToAttributeTransformer } from 'typeorm/browser/query-builder/relation-id/RelationIdMetadataToAttributeTransformer.js';
+import { GetUserDTO } from './dto/get-user.dto';
 
 @Injectable()
 export class UserService {
@@ -78,8 +79,13 @@ export class UserService {
   }
 
   //TODO: remove? or add auth guard? (+pagination)
-  findAll() {
-    return this.userRepository.find({ relations: ['roles'] });
+  async findAll(): Promise<GetUserDTO[]> {
+    const res = await this.userRepository.find({ relations: ['roles'] });
+    return res.map(u => ({
+      firstName: u.firstName ?? "",
+      lastName: u.lastName ?? "",
+      email: u.email,
+    }));
   }
 
   // findOne(id: number) {
