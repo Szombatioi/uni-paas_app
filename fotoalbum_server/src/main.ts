@@ -20,9 +20,11 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   // Make "/" return the OpenAPI JSON document
-  app.getHttpAdapter().get('/', (req, res) => {
-    res.json(document);
-  });
+  // app.getHttpAdapter().get('/', (req, res) => {
+  //   res.json(document);
+  // });
+
+  SwaggerModule.setup("/", app, document);
 
   await app.listen(process.env.PORT ?? 3000, "0.0.0.0");
 }
