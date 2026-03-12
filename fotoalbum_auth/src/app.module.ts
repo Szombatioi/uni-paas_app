@@ -40,6 +40,9 @@ import { SeederModule } from './seed/seeder.module';
         database: configService.get<string>('DB_DATABASE', 'auth_db'),
         entities: [path.join(__dirname, '**', '*.entity{.ts,.js}')],
         synchronize: true,
+        ssl: {
+          rejectUnauthorized: false, // Required for Render connections
+        },
       }),
     }),
     UserModule,
