@@ -15,7 +15,7 @@ A képeket lehet rendezni `név` és `dátum` szerint növekvő, illetve csökke
 
 Képet törölni a bejelentkezett felhasználók tudnak. Nincs megkötés, hogy csak a saját képeiket törölhessék, mivel ez nem volt követelménye a feladatnak.
 
-Ha egy képre rákattint a felhasználó, akkor az *Object storage*-ban (lásd: <a href="#backend">Backend</a>) található elérési útvonala alapján megjeleníti a képet.
+Ha egy képre rákattint a felhasználó, akkor a *Cloudflare R2*-ban (lásd: <a href="#backend">Backend</a>) található elérési útvonala alapján megjeleníti a képet.
 
 ### <span id="backend">Backend</span> (Üzleti logikai réteg)
 
@@ -26,19 +26,27 @@ A hitelesítési szolgáltatás a felhasználókezelést valósítja meg. Ezt eg
 
 A JWT-hez használt titkos kulcs meg van osztva az Auth és a Server között, így a Server is védhet API végpontokat.
 
-Az Auth szolgáltatás egy Azure MSSQL adatbázisba menti le a felhasználók adatait.
+Az Auth szolgáltatás egy Render PostgreSQL adatbázisba menti le a felhasználók adatait.
 
 #### Server
 A Server kezeli a blob storage fájlkezelését (képek lementéséhez, törléséhez), illetve a fájlok metaadatainak mentését. (Adatelérési réteg)
 
-A képeket egy Azure Blob Storage-ba mentem le, amit a ***StorageService*** valósít meg. Ehhez a szolgáltatáshoz a `@azure/storage-blob` könyvtárat használom a képek feltöltéséhez és törléséhez.
+A képeket a Cloudflare R2 szolgáltatásba mentem le, amit a ***StorageService*** valósít meg. Ehhez a szolgáltatáshoz az `MinioClient` könyvtárat használom a képek feltöltéséhez és törléséhez.
 
-A képekhez eltárolja a szerver az Auth szolgáltatáshoz hasonlóan egy Azure adatbázisba a metaadatokat: fájlnév (ID), név (amit a felhasználó ad meg neki) és a feltöltés dátumát.
+A képekhez eltárolja a szerver az Auth szolgáltatáshoz hasonlóan egy Render PostgreSQL adatbázisba a metaadatokat: fájlnév (ID), név (amit a felhasználó ad meg neki) és a feltöltés dátumát.
 
 
 ## Deployment
-Ahogy az fent említve volt, az Azure SQL Server és Azure Blob Storage van használva az adatok és képek tárolására, emellett a szolgáltatások telepítésére a `Render` Platform-as-a-Service szolgáltatást használtam.
+~~Ahogy az fent említve volt, az Azure SQL Server és Azure Blob Storage van használva az adatok és képek tárolására, emellett a szolgáltatások telepítésére a `Render` Platform-as-a-Service szolgáltatást használtam.~~
 
-Ez a szolgáltatás összekötöttem a webalkalmazás Github repository-jával, melyhez létrehoztam egy `render.yaml` fájlt, ami a szolgáltatásaimat írja le, többek között a hozzájuk tartozó *Dockerfile*-ok elérési útvonalát.
+<span style="color: red;">
+Figyelem: Az első verzióhoz képest az Azure SQL Server és Azure Blob storage le lett cserélve, ugyanis a hallgatói krediteket egy hibásan beállított adatbázis elfogyasztotta napok alatt.
+</span> 
+<br /><br />
+
+Ahogy fent említettem, az adatokat a **Render PostgreSQL** adatbázisban, a képeket pedig a **Cloudflare R2** objektum tárolóban helyezem el, a szolgáltatások telepítésére pedig a **Render** Platform-as-a-Service platformot használom.
+
+Ezt a szolgáltatást összekötöttem a webalkalmazás Github repository-jával, melyhez létrehoztam egy `render.yaml` fájlt, ami a szolgáltatásaimat írja le, többek között a hozzájuk tartozó *Dockerfile*-ok elérési útvonalát.
 
 A CI/CD folyamatot Github Actions-el oldottam meg, amit a `.github/workflows` mappában lévő `main.yaml` ír le. Ez egy-egy POST hívást küld a megfelelő *Render Hookok* címére, elindítva a telepítést. A hookok címeit a Github Secrets füléről tölti be a workflow.
+
