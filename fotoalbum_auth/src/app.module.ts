@@ -37,7 +37,7 @@ import { SeederModule } from './seed/seeder.module';
         port: parseInt(configService.get<string>('DB_PORT', '1433'), 10),
         username: configService.get<string>('DB_USERNAME', 'auth_admin'),
         password: configService.get<string>('DB_PASSWORD', 'auth_admin'),
-        database: configService.get<string>('DB_DATABASE', 'auth_db'),
+        database: configService.get<string>('DB_NAME', 'auth_db'),
         entities: [path.join(__dirname, '**', '*.entity{.ts,.js}')],
         synchronize: true,
         ssl: {

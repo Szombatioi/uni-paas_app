@@ -17,10 +17,15 @@ export class AppService {
         private configService: ConfigService
     ){
         const s3Protocol = this.configService.get<string>('S3_PROTOCOL')!;
-        const s3Url = this.configService.get<string>('S3_ENDPOINT')!;
+        const s3Url = this.configService.get<string>('S3_ENDPOINT')!;     
+
         const s3Port = this.configService.get<string>('S3_PORT')!;
         const bucketName = this.configService.get<string>('S3_BUCKET')!
         this.objectStorageUrlPrefix = `${s3Protocol}://${s3Url}:${s3Port}/${bucketName}/`;
+        const image_url = this.configService.get<string>('S3_IMAGE_ENDPOINT');
+        if (image_url) {
+            this.objectStorageUrlPrefix = `${image_url}/`;
+        }
     }
 
     async uploadImage(file: Express.Multer.File, data: ImageDto){

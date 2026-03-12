@@ -40,7 +40,7 @@ export default function ImageListItem({
                 borderColor: "divider",
                 borderRadius: 2,
                 padding: 2,
-                mb: 1, // Adjunk neki egy kis alsó margót a listában
+                mb: 1,
                 display: "flex",
                 alignItems: "center",
                 transition: "all 0.2s ease-in-out",
@@ -60,7 +60,7 @@ export default function ImageListItem({
                 bgcolor: 'primary.light',
                 p: 1,
                 borderRadius: 1,
-                flexShrink: 0 // Ne nyomódjon össze az ikon
+                flexShrink: 0
             }}>
                 <InsertDriveFile />
             </Box>
