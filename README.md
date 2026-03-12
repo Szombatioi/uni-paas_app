@@ -40,7 +40,7 @@ A képekhez eltárolja a szerver az Auth szolgáltatáshoz hasonlóan egy Render
 ~~Ahogy az fent említve volt, az Azure SQL Server és Azure Blob Storage van használva az adatok és képek tárolására, emellett a szolgáltatások telepítésére a `Render` Platform-as-a-Service szolgáltatást használtam.~~
 
 <span style="color: red;">
-Figyelem: Az első verzióhoz képest az Azure SQL Server és Azure Blob storage le lett cserélve, ugyanis a hallgatói krediteket egy hibásan beállított adatbázis elfogyasztotta napok alatt.
+Az első verzióhoz képest az Azure SQL Server-t és Azure Blob Storage-t is lecseréltem, ugyanis a hallgatói krediteket egy hibásan beállított adatbázis elfogyasztotta napok alatt.
 </span> 
 <br /><br />
 
