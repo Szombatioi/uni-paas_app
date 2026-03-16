@@ -35,8 +35,8 @@ export class StorageService {
   constructor(private configService: ConfigService) {
     this.minioClient = new Minio.Client({
       endPoint: this.configService.get<string>('S3_ENDPOINT')!,
-      port: this.configService.get<number>('S3_PORT'),
-      useSSL: this.configService.get<string>('S3_USE_SSL')! === 'true',
+      port: 443,//this.configService.get<number>('S3_PORT'),
+      useSSL: true, //this.configService.get<string>('S3_USE_SSL')! === 'true',
       accessKey: this.configService.get<string>('S3_ACCESS_KEY')!,
       secretKey: this.configService.get<string>('S3_SECRET_KEY')!,
       region: 'auto',
