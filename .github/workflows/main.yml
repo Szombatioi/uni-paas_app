@@ -9,9 +9,10 @@ jobs:
     steps:
       - name: Install oc CLI
         run: |
-          curl -LO https://github.com/okd-project/okd/releases/download/4.14.0-0.okd-2024-01-06-110517/openshift-client-linux-4.14.0-0.okd-2024-01-06-110517.tar.gz
-          tar -xzf openshift-client-linux-*.tar.gz
+          curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz
+          tar -xzf oc.tar.gz
           sudo mv oc /usr/local/bin/
+          oc version --client
 
       - name: Login to OpenShift
         run: |
