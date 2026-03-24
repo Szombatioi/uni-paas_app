@@ -7,8 +7,11 @@ async function bootstrap() {
   // console.log(__dirname)
   const app = await NestFactory.create(AppModule);
 
+  if(process.env.CORS_ORIGINS) {
+    console.log("Using custom CORS origins");
+  }
   app.enableCors({
-    origin: [
+    origin: process.env.CORS_ORIGINS?.split(",") ?? [
       "http://localhost:3001",
       "https://fotoalbum-server.onrender.com"
     ], //any origin allowed

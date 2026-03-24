@@ -4,8 +4,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  if(process.env.CORS_ORIGINS) {
+    console.log("Using custom CORS origins");
+  }
   app.enableCors({
-    origin: [
+    origin: process.env.CORS_ORIGINS?.split(",") ?? [
       "http://localhost:3000",
       "https://fotoalbum-frontend.onrender.com"
     ],
