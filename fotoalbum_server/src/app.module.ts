@@ -27,7 +27,7 @@ import { AuthProxyModule } from './auth_proxy/auth-proxy.module';
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
-        ssl: {
+        ssl: configService.get<string>('DB_SSL') === 'false' ? false : {
           rejectUnauthorized: false,
         },
       }),
