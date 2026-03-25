@@ -20,7 +20,7 @@ class FotoalbumUser(HttpUser):
             "password": "admin123"
         })
         if response.status_code == 200 or response.status_code == 201:
-            self.token = response.json().get("access_token") or response.json().get("token")
+            self.token = response.text.strip()#response.json().get("access_token") or response.json().get("token")
         else:
             self.token = None
 
