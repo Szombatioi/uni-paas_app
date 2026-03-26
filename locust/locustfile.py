@@ -15,6 +15,7 @@ class FotoalbumUser(HttpUser):
 
     def on_start(self):
         """Bejelentkezés az összes user számára induláskor"""
+        self.client.cookies.clear()
         response = self.client.post("/api/auth/login", json={
             "email": "admin@admin.com",
             "password": "admin123"
@@ -32,6 +33,7 @@ class FotoalbumUser(HttpUser):
     @task(5)
     def list_images(self):
         """Képek listázása - leggyakoribb művelet"""
+        self.client.cookies.clear()
         with self.client.get("/api/images", catch_response=True, headers={"Connection": "close"}) as response:
             if response.status_code == 200:
                 response.success()
@@ -63,6 +65,7 @@ class FotoalbumUser(HttpUser):
         name = f"test_{random_string(6)}"
         file_obj = io.BytesIO(png_bytes)
 
+        self.client.cookies.clear()
         with self.client.post(
             "/api/image",
             headers={
@@ -95,6 +98,7 @@ class FotoalbumUser(HttpUser):
 
         filename = random.choice(FotoalbumUser.uploaded_filenames)
 
+        self.client.cookies.clear()
         with self.client.delete(
             f"/api/image/{filename}",
             headers={
@@ -117,6 +121,7 @@ class FotoalbumUser(HttpUser):
         """Bejelentkezett felhasználó adatainak lekérése"""
         if not self.token:
             return
+        self.client.cookies.clear()
         with self.client.get(
             "/api/auth/me",
             headers={
