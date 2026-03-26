@@ -21,8 +21,10 @@ class FotoalbumUser(HttpUser):
         })
         if response.status_code == 200 or response.status_code == 201:
             self.token = response.text.strip()#response.json().get("access_token") or response.json().get("token")
+            print("#"*10, "token:", self.token, "#"*10)
         else:
             self.token = None
+            print("#"*10, "Failed to obtain token", "#"*10)
 
     def auth_headers(self):
         return {"Authorization": f"Bearer {self.token}"} if self.token else {}
