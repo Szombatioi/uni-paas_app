@@ -26,27 +26,36 @@ A hitelesítési szolgáltatás a felhasználókezelést valósítja meg. Ezt eg
 
 A JWT-hez használt titkos kulcs meg van osztva az Auth és a Server között, így a Server is védhet API végpontokat.
 
-Az Auth szolgáltatás egy Render PostgreSQL adatbázisba menti le a felhasználók adatait.
+Az Auth szolgáltatás egy OpenShift-en futó PostgreSQL adatbázisba menti le a felhasználók adatait.
 
 #### Server
 A Server kezeli a blob storage fájlkezelését (képek lementéséhez, törléséhez), illetve a fájlok metaadatainak mentését. (Adatelérési réteg)
 
 A képeket a Cloudflare R2 szolgáltatásba mentem le, amit a ***StorageService*** valósít meg. Ehhez a szolgáltatáshoz az `MinioClient` könyvtárat használom a képek feltöltéséhez és törléséhez.
 
-A képekhez eltárolja a szerver az Auth szolgáltatáshoz hasonlóan egy Render PostgreSQL adatbázisba a metaadatokat: fájlnév (ID), név (amit a felhasználó ad meg neki) és a feltöltés dátumát.
+A képekhez eltárolja a szerver az Auth szolgáltatáshoz hasonlóan egy OpenShift-en futó PostgreSQL adatbázisba a metaadatokat: fájlnév (ID), név (amit a felhasználó ad meg neki) és a feltöltés dátumát.
 
 
 ## Deployment
 ~~Ahogy az fent említve volt, az Azure SQL Server és Azure Blob Storage van használva az adatok és képek tárolására, emellett a szolgáltatások telepítésére a `Render` Platform-as-a-Service szolgáltatást használtam.~~
 
-<span style="color: red;">
+<span style="color: red; text-decoration-line: line-through;">
 Az első verzióhoz képest az Azure SQL Server-t és Azure Blob Storage-t is lecseréltem, ugyanis a hallgatói krediteket egy hibásan beállított adatbázis elfogyasztotta napok alatt.
 </span> 
 <br /><br />
 
-Ahogy fent említettem, az adatokat a **Render PostgreSQL** adatbázisban, a képeket pedig a **Cloudflare R2** objektum tárolóban helyezem el, a szolgáltatások telepítésére pedig a **Render** Platform-as-a-Service platformot használom.
+Az adatokat **OpenShift PostgreSQL** adatbázisban, a képeket pedig a **Cloudflare R2** objektum tárolóban helyezem el, a szolgáltatások telepítésére pedig az egyetem által futtatott **OpenShift** Platform-as-a-Service platformot használom.
 
-Ezt a szolgáltatást összekötöttem a webalkalmazás Github repository-jával, melyhez létrehoztam egy `render.yaml` fájlt, ami a szolgáltatásaimat írja le, többek között a hozzájuk tartozó *Dockerfile*-ok elérési útvonalát.
+A szolgáltatások OpenShift-en belül külön *Deployment* erőforrásként futnak, mindegyikhez tartozik egy dedikált *BuildConfig*, amely a hozzájuk tartozó Dockerfile alapján építi fel a konténer image-eket az OpenShift belső image registry-jébe.
 
-A CI/CD folyamatot Github Actions-el oldottam meg, amit a `.github/workflows` mappában lévő `main.yaml` ír le. Ez egy-egy POST hívást küld a megfelelő *Render Hookok* címére, elindítva a telepítést. A hookok címeit a Github Secrets füléről tölti be a workflow.
+A CI/CD folyamatot Github Actions-el oldottam meg, amit a `.github/workflows` mappában lévő `main.yaml` ír le. Ez az OpenShift CLI (`oc`) segítségével bejelentkezik a klaszterbe, majd `oc start-build` parancsokkal elindítja az egyes szolgáltatások build folyamatát, végül `oc set image` parancsokkal frissíti a Deployment-eket az újonnan épített image-ekre. A hookok címeit a Github Secrets füléről tölti be a workflow.
 
+TODO: átírni a render-t OpenShift-re
+
+# Skálázhatóság és stresszteszt
+Az OpenShift tartalmaz egy Horizontal Pod Autoscaler-t, amit felkonfigurálva beállítható, hogy hány Pod fusson minimum és maximum, valamint hogy milyen átlagos terhelés felett indítson új Podokat a PaaS környezet.
+
+Az ehhez tartozó dokumentumok megtalálhatók a `docs` mappában:
+* `SCALABILITY_CONFIG.md`: Automatikus skálázódás konfigurációja OpenShift környezetben
+* `STRESSTEST.md`: Terheléspróba jegyzőkönyv
+* `INSIGHTS.md`: Skálázódás és a terheléspróba tanulságai
