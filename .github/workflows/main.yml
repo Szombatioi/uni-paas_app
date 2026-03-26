@@ -8,7 +8,7 @@ jobs:
     name: Deploy ${{ matrix.service }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: fast #do not fail if any of the builds fail
+      fail-fast: false #do not fail if any of the builds fail
       matrix:
         service: [auth, server, frontend, locust]
     steps:
