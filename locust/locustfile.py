@@ -18,7 +18,7 @@ class FotoalbumUser(HttpUser):
         response = self.client.post("/api/auth/login", json={
             "email": "admin@admin.com",
             "password": "admin123"
-        })
+        }, headers={"Connection": "close"})
         if response.status_code == 200 or response.status_code == 201:
             self.token = response.text.strip()#response.json().get("access_token") or response.json().get("token")
             print("#"*10, "token:", self.token, "#"*10)
@@ -32,7 +32,7 @@ class FotoalbumUser(HttpUser):
     @task(5)
     def list_images(self):
         """Képek listázása - leggyakoribb művelet"""
-        with self.client.get("/api/images", catch_response=True) as response:
+        with self.client.get("/api/images", catch_response=True, headers={"Connection": "close"}) as response:
             if response.status_code == 200:
                 response.success()
                 images = response.json()
@@ -65,7 +65,10 @@ class FotoalbumUser(HttpUser):
 
         with self.client.post(
             "/api/image",
-            headers=self.auth_headers(),
+            headers={
+                "Connection": "close",
+                "Authorization": f"Bearer {self.token}"
+            },
             files={"file": (f"{name}.png", file_obj, "image/png")},
             data={"name": name},
             catch_response=True
@@ -94,7 +97,10 @@ class FotoalbumUser(HttpUser):
 
         with self.client.delete(
             f"/api/image/{filename}",
-            headers=self.auth_headers(),
+            headers={
+                "Connection": "close",
+                "Authorization": f"Bearer {self.token}"
+            },
             catch_response=True
         ) as response:
             if response.status_code in (200, 204):
@@ -113,7 +119,10 @@ class FotoalbumUser(HttpUser):
             return
         with self.client.get(
             "/api/auth/me",
-            headers=self.auth_headers(),
+            headers={
+                "Connection": "close",
+                "Authorization": f"Bearer {self.token}"
+            },
             catch_response=True
         ) as response:
             if response.status_code == 200:
