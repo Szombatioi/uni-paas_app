@@ -5,8 +5,16 @@ on:
 
 jobs:
   deploy:
+    name: Deploy ${{ matrix.service }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: fast #do not fail if any of the builds fail
+      matrix:
+        service: [auth, server, frontend, locust]
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Install oc CLI
         run: |
           curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz
@@ -20,30 +28,41 @@ jobs:
             --token=${{ secrets.OPENSHIFT_TOKEN }} \
             --insecure-skip-tls-verify=true
 
-      - name: Trigger Auth Build
-        run: oc start-build fotoalbum-auth -n fotoalbum --follow
+      # - name: Trigger Auth Build
+      #   run: oc start-build fotoalbum-auth -n fotoalbum --follow
 
-      - name: Trigger Server Build
-        run: oc start-build fotoalbum-server -n fotoalbum --follow
+      # - name: Trigger Server Build
+      #   run: oc start-build fotoalbum-server -n fotoalbum --follow
 
-      - name: Trigger Frontend Build
-        run: oc start-build fotoalbum-frontend -n fotoalbum --follow
+      # - name: Trigger Frontend Build
+      #   run: oc start-build fotoalbum-frontend -n fotoalbum --follow
 
-      - name: Trigger Locust Build
-        run: oc start-build fotoalbum-locust -n fotoalbum --follow
+      # - name: Trigger Locust Build
+      #   run: oc start-build fotoalbum-locust -n fotoalbum --follow
+      
+      - name: Trigger Build for ${{ matrix.service }}
+        run: oc start-build fotoalbum-${{ matrix.service }} -n fotoalbum --follow
 
-      - name: Update deployments with new images
-        run: |
-          AUTH_DIGEST=$(oc get istag fotoalbum-auth:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
-          SERVER_DIGEST=$(oc get istag fotoalbum-server:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
-          FRONTEND_DIGEST=$(oc get istag fotoalbum-frontend:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
-          LOCUST_DIGEST=$(oc get istag fotoalbum-locust:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
+      # - name: Update deployments with new images
+      #   run: |
+      #     AUTH_DIGEST=$(oc get istag fotoalbum-auth:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
+      #     SERVER_DIGEST=$(oc get istag fotoalbum-server:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
+      #     FRONTEND_DIGEST=$(oc get istag fotoalbum-frontend:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
+      #     LOCUST_DIGEST=$(oc get istag fotoalbum-locust:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
 
           
-          oc set image deployment/fotoalbum-auth fotoalbum-auth=$AUTH_DIGEST -n fotoalbum
-          oc set image deployment/fotoalbum-server fotoalbum-server=$SERVER_DIGEST -n fotoalbum
-          oc set image deployment/fotoalbum-frontend fotoalbum-frontend=$FRONTEND_DIGEST -n fotoalbum
-          oc set image deployment/fotoalbum-locust fotoalbum-locust=$LOCUST_DIGEST -n fotoalbum
+      #     oc set image deployment/fotoalbum-auth fotoalbum-auth=$AUTH_DIGEST -n fotoalbum
+      #     oc set image deployment/fotoalbum-server fotoalbum-server=$SERVER_DIGEST -n fotoalbum
+      #     oc set image deployment/fotoalbum-frontend fotoalbum-frontend=$FRONTEND_DIGEST -n fotoalbum
+      #     oc set image deployment/fotoalbum-locust fotoalbum-locust=$LOCUST_DIGEST -n fotoalbum
+
+      - name: Update deployment with new image
+        run: |
+          # Get image digest for the new build
+          DIGEST=$(oc get istag fotoalbum-${{ matrix.service }}:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
+          
+          # Set the new image for the deployment
+          oc set image deployment/fotoalbum-${{ matrix.service }} fotoalbum-${{ matrix.service }}=$DIGEST -n fotoalbum
 
 
 # name: Deploy to Render
