@@ -28,7 +28,7 @@ Ehhez létrehoztam a következőket:
 Ezen felül a Github Actions workflow fájlba felvettem a locust-ot is, mint service-t, hogy a CI/CD pipeline részeként a locust alkalmazás is frissüljön:
 ```yaml
 strategy:
-      fail-fast: false #do not fail if any of the builds fail
+      fail-fast: false
       matrix:
         service: [auth, server, frontend, locust]
 ```
@@ -44,12 +44,12 @@ A vizsgálat előtt megnyitottam az OpenShift felületén a következőket:
 (emellett a futás alatt a Locust felületén a ***Charts*** fülön tekintettem a további jellemzőket)
 
 Egyéb információk:
-* <u>A terheléspróba időpontja</u>: 2026.03.26. 14:19 - 14:24 (5 perc)
+* <u>A terheléspróba időpontja</u>: 2026.03.26. 15:52 - 16:02 (10 perc)
 * <u>Virtuális felhasználók száma</u>: 50
 * <u>Ramp-up ráta</u>: 5 felhasználó / mp
 
 ## Eredmények, események
-Az alábbi kép a Locust felületén mutatja be a HTTP kérdés- és válasz értékeket a tesztelés idején. Látható mindhárom grafikonon a folyamatos terhelésnövekedést (a ramp-upnak miatt fokozatosan, nem hirtelen), valamint, hogy idővel stabilizálódtak a kiszolgálások a felskálázódás miatt.
+Az alábbi kép a Locust felületén mutatja be a HTTP kérdés- és válasz értékeket a tesztelés idején. Látható mindhárom grafikonon a folyamatos terhelésnövekedés (a ramp-up miatt fokozatosan, nem hirtelen), valamint, hogy idővel stabilizálódtak a kiszolgálások a felskálázódás miatt.
 
 ![image](images/locust_charts.png)
 
