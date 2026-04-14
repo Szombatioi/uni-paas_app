@@ -9,31 +9,21 @@ jobs:
     name: Deploy ${{ matrix.service }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false #do not fail if any of the builds fail
+      fail-fast: false
       matrix:
         include:
           - service: auth
-            paths: fotoalbum_auth/**
+            path: fotoalbum_auth
           - service: server
-            paths: fotoalbum_server/**
+            path: fotoalbum_server
           - service: frontend
-            paths: fotoalbum_frontend/**
+            path: fotoalbum_frontend
           - service: locust
-            paths: locust/**
+            path: locust
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-      
-      - name: Check for changes
-        id: changes
-        run: |
-          if git diff --name-only HEAD~1 HEAD | grep -q "^${{ matrix.paths }}"; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Install oc CLI
         run: |
@@ -48,51 +38,14 @@ jobs:
             --token=${{ secrets.OPENSHIFT_TOKEN }} \
             --insecure-skip-tls-verify=true
 
-      # - name: Trigger Auth Build
-      #   run: oc start-build fotoalbum-auth -n fotoalbum --follow
-
-      # - name: Trigger Server Build
-      #   run: oc start-build fotoalbum-server -n fotoalbum --follow
-
-      # - name: Trigger Frontend Build
-      #   run: oc start-build fotoalbum-frontend -n fotoalbum --follow
-
-      # - name: Trigger Locust Build
-      #   run: oc start-build fotoalbum-locust -n fotoalbum --follow
-      
-      # - name: Trigger Build for ${{ matrix.service }}
-      #   run: oc start-build fotoalbum-${{ matrix.service }} -n fotoalbum --follow
-
       - name: Trigger Build for ${{ matrix.service }}
-        if: steps.changes.outputs.changed == 'true'
         run: oc start-build fotoalbum-${{ matrix.service }} -n fotoalbum --follow
 
-      # - name: Update deployments with new images
-      #   run: |
-      #     AUTH_DIGEST=$(oc get istag fotoalbum-auth:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
-      #     SERVER_DIGEST=$(oc get istag fotoalbum-server:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
-      #     FRONTEND_DIGEST=$(oc get istag fotoalbum-frontend:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
-      #     LOCUST_DIGEST=$(oc get istag fotoalbum-locust:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
-
-          
-      #     oc set image deployment/fotoalbum-auth fotoalbum-auth=$AUTH_DIGEST -n fotoalbum
-      #     oc set image deployment/fotoalbum-server fotoalbum-server=$SERVER_DIGEST -n fotoalbum
-      #     oc set image deployment/fotoalbum-frontend fotoalbum-frontend=$FRONTEND_DIGEST -n fotoalbum
-      #     oc set image deployment/fotoalbum-locust fotoalbum-locust=$LOCUST_DIGEST -n fotoalbum
-
-      # - name: Update deployment with new image
-      #   run: |
-      #     # Get image digest for the new build
-      #     DIGEST=$(oc get istag fotoalbum-${{ matrix.service }}:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
-          
-      #     # Set the new image for the deployment
-      #     oc set image deployment/fotoalbum-${{ matrix.service }} fotoalbum-${{ matrix.service }}=$DIGEST -n fotoalbum
-
       - name: Update deployment with new image
-        if: steps.changes.outputs.changed == 'true'
         run: |
           DIGEST=$(oc get istag fotoalbum-${{ matrix.service }}:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
           oc set image deployment/fotoalbum-${{ matrix.service }} fotoalbum-${{ matrix.service }}=$DIGEST -n fotoalbum
+
   terraform:
     name: Terraform Apply
     runs-on: ubuntu-latest
@@ -124,62 +77,50 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Restore Terraform state
-        uses: actions/cache@v4
-        with:
-          path: terraform/terraform.tfstate
-          key: terraform-state-${{ github.ref }}
-          restore-keys: terraform-state-
-
       - name: Terraform Init
         working-directory: terraform
         run: terraform init
 
-      - name: Terraform Apply
+      - name: Generate tfvars
         working-directory: terraform
         run: |
-          terraform apply -auto-approve \
-            -var="openshift_api_url=${{ secrets.OPENSHIFT_SERVER }}" \
-            -var="openshift_token=${{ secrets.OPENSHIFT_TOKEN }}" \
-            -var="db_password=${{ secrets.DB_PASSWORD }}" \
-            -var="db_username=${{ secrets.DB_USERNAME }}" \
-            -var="db_name=${{ secrets.DB_NAME }}" \
-            -var="db_type=postgres" \
-            -var="db_ssl=false" \
-            -var="jwt_secret=${{ secrets.JWT_SECRET }}" \
-            -var="s3_access_key=${{ secrets.MINIO_ACCESS }}" \
-            -var="s3_secret_key=${{ secrets.MINIO_SECRET }}" \
-            -var="s3_endpoint=${{ secrets.S3_ENDPOINT }}" \
-            -var="s3_image_endpoint=${{ secrets.S3_IMAGE_ENDPOINT }}" \
-            -var="s3_bucket=${{ secrets.S3_BUCKET }}" \
-            -var="cors_origins=${{ secrets.CORS_ORIGINS }}" \
-            -var="next_public_backend_url=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}" \
-            -var="auth_endpoint=http://fotoalbum-auth:8888" \
-            -var="auth_image=${{ steps.digests.outputs.auth }}" \
-            -var="backend_image=${{ steps.digests.outputs.server }}" \
-            -var="frontend_image=${{ steps.digests.outputs.frontend }}"
+          cat > ci.tfvars <<EOF
+          openshift_api_url       = "${{ secrets.OPENSHIFT_SERVER }}"
+          openshift_token         = "${{ secrets.OPENSHIFT_TOKEN }}"
+          db_password             = "${{ secrets.DB_PASSWORD }}"
+          db_username             = "${{ secrets.DB_USERNAME }}"
+          db_name                 = "${{ secrets.DB_NAME }}"
+          db_type                 = "postgres"
+          db_ssl                  = "false"
+          jwt_secret              = "${{ secrets.JWT_SECRET }}"
+          s3_access_key           = "${{ secrets.MINIO_ACCESS }}"
+          s3_secret_key           = "${{ secrets.MINIO_SECRET }}"
+          s3_endpoint             = "${{ secrets.S3_ENDPOINT }}"
+          s3_image_endpoint       = "${{ secrets.S3_IMAGE_ENDPOINT }}"
+          s3_bucket               = "${{ secrets.S3_BUCKET }}"
+          cors_origins            = "${{ secrets.CORS_ORIGINS }}"
+          next_public_backend_url = "${{ secrets.NEXT_PUBLIC_BACKEND_URL }}"
+          auth_endpoint           = "http://fotoalbum-auth:8888"
+          auth_image              = "${{ steps.digests.outputs.auth }}"
+          backend_image           = "${{ steps.digests.outputs.server }}"
+          frontend_image          = "${{ steps.digests.outputs.frontend }}"
+          EOF
 
-      - name: Save Terraform state
-        uses: actions/cache@v4
-        with:
-          path: terraform/terraform.tfstate
-          key: terraform-state-${{ github.ref }}
-      
+      - name: Import existing resources
+        working-directory: terraform
+        run: |
+          terraform import -var-file="ci.tfvars" kubernetes_persistent_volume_claim.postgres_pvc fotoalbum/fotoalbum-db || true
+          terraform import -var-file="ci.tfvars" kubernetes_deployment.postgres fotoalbum/fotoalbum-db || true
+          terraform import -var-file="ci.tfvars" kubernetes_service.postgres fotoalbum/fotoalbum-db || true
+          terraform import -var-file="ci.tfvars" kubernetes_secret.fotoalbum_secrets fotoalbum/fotoalbum-secrets || true
+          terraform import -var-file="ci.tfvars" kubernetes_config_map.fotoalbum_config fotoalbum/fotoalbum-config || true
+          terraform import -var-file="ci.tfvars" kubernetes_deployment.backend fotoalbum/fotoalbum-server || true
+          terraform import -var-file="ci.tfvars" kubernetes_service.backend fotoalbum/fotoalbum-server || true
+          terraform import -var-file="ci.tfvars" kubernetes_deployment.auth fotoalbum/fotoalbum-auth || true
+          terraform import -var-file="ci.tfvars" kubernetes_service.auth fotoalbum/fotoalbum-auth || true
+          terraform import -var-file="ci.tfvars" kubernetes_deployment.frontend fotoalbum/fotoalbum-frontend || true
+          terraform import -var-file="ci.tfvars" kubernetes_service.frontend fotoalbum/fotoalbum-frontend || true
 
-# name: Deploy to Render
-# on:
-#   push:
-#     branches: [main]
-
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Trigger Auth Deploy
-#         run: curl -X POST ${{ secrets.RENDER_AUTH_HOOK }}
-
-#       - name: Trigger Backend Deploy
-#         run: curl -X POST ${{ secrets.RENDER_BACKEND_HOOK }}
-
-#       - name: Trigger Frontend Deploy
-#         run: curl -X POST ${{ secrets.RENDER_FRONTEND_HOOK }}
+      - name: Terraform Apply
+        working-directory: terraform
+        run: terraform apply -auto-approve -var-file="ci.tfvars"
