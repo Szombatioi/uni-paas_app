@@ -52,15 +52,16 @@ variable "jwt_secret" {
   sensitive = true
 }
 
-variable "minio_access" {
-  type      = string
-  sensitive = true
-}
+# variable "minio_access" {
+#   type      = string
+#   sensitive = true
+# }
 
-variable "minio_secret" {
-  type      = string
-  sensitive = true
-}
+# variable "minio_secret" {
+#   type      = string
+#   sensitive = true
+# }
+
 variable "db_type" {
   type    = string
   default = "postgres"
