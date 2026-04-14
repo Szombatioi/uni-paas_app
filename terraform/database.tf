@@ -75,6 +75,16 @@ resource "kubernetes_deployment" "postgres" {
           }
 
           env {
+            name = "POSTGRESQL_ADMIN_PASSWORD"
+            value_from {
+              secret_key_ref {
+                name = kubernetes_secret.fotoalbum_secrets.metadata[0].name
+                key  = "DB_PASSWORD"
+              }
+            }
+          }
+
+          env {
             name = "POSTGRESQL_DATABASE"
             value_from {
               config_map_key_ref {
