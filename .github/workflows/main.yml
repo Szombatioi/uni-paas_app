@@ -127,7 +127,9 @@ jobs:
             -var="auth_endpoint=http://fotoalbum-auth:8888" \
             -var="auth_image=${{ steps.digests.outputs.auth }}" \
             -var="backend_image=${{ steps.digests.outputs.server }}" \
-            -var="frontend_image=${{ steps.digests.outputs.frontend }}"
+            -var="frontend_image=${{ steps.digests.outputs.frontend }} \
+            -var="minio_access=${{ secrets.MINIO_ACCESS }}" \
+            -var="minio_secret=${{ secrets.MINIO_SECRET }}" "
 
       - name: Save Terraform state
         uses: actions/cache@v4
