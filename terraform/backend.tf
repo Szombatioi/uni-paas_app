@@ -7,6 +7,8 @@ resource "kubernetes_deployment" "backend" {
     }
   }
 
+  wait_for_rollout = false
+
   spec {
     replicas = 1
 

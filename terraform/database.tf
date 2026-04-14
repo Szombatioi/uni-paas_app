@@ -27,6 +27,8 @@ resource "kubernetes_deployment" "postgres" {
     }
   }
 
+  wait_for_rollout = false
+
   spec {
     replicas = 1
 
