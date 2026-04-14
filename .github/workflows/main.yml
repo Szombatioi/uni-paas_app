@@ -9,21 +9,31 @@ jobs:
     name: Deploy ${{ matrix.service }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: false #do not fail if any of the builds fail
       matrix:
         include:
           - service: auth
-            path: fotoalbum_auth
+            paths: fotoalbum_auth/**
           - service: server
-            path: fotoalbum_server
+            paths: fotoalbum_server/**
           - service: frontend
-            path: fotoalbum_frontend
+            paths: fotoalbum_frontend/**
           - service: locust
-            path: locust
-
+            paths: locust/**
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --name-only HEAD~1 HEAD | grep -q "^${{ matrix.paths }}"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Install oc CLI
         run: |
@@ -39,13 +49,14 @@ jobs:
             --insecure-skip-tls-verify=true
 
       - name: Trigger Build for ${{ matrix.service }}
+        if: steps.changes.outputs.changed == 'true'
         run: oc start-build fotoalbum-${{ matrix.service }} -n fotoalbum --follow
 
       - name: Update deployment with new image
+        if: steps.changes.outputs.changed == 'true'
         run: |
           DIGEST=$(oc get istag fotoalbum-${{ matrix.service }}:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
           oc set image deployment/fotoalbum-${{ matrix.service }} fotoalbum-${{ matrix.service }}=$DIGEST -n fotoalbum
-
   terraform:
     name: Terraform Apply
     runs-on: ubuntu-latest
