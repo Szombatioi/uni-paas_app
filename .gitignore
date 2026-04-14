@@ -1,1 +1,4 @@
 local_test/
+terraform/*.tfvars
+terraform/.terraform/
+terraform/terraform.tfstate
