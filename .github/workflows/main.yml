@@ -11,10 +11,29 @@ jobs:
     strategy:
       fail-fast: false #do not fail if any of the builds fail
       matrix:
-        service: [auth, server, frontend, locust]
+        include:
+          - service: auth
+            paths: fotoalbum_auth/**
+          - service: server
+            paths: fotoalbum_server/**
+          - service: frontend
+            paths: fotoalbum_frontend/**
+          - service: locust
+            paths: locust/**
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --name-only HEAD~1 HEAD | grep -q "^${{ matrix.paths }}"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Install oc CLI
         run: |
@@ -41,7 +60,11 @@ jobs:
       # - name: Trigger Locust Build
       #   run: oc start-build fotoalbum-locust -n fotoalbum --follow
       
+      # - name: Trigger Build for ${{ matrix.service }}
+      #   run: oc start-build fotoalbum-${{ matrix.service }} -n fotoalbum --follow
+
       - name: Trigger Build for ${{ matrix.service }}
+        if: steps.changes.outputs.changed == 'true'
         run: oc start-build fotoalbum-${{ matrix.service }} -n fotoalbum --follow
 
       # - name: Update deployments with new images
@@ -57,17 +80,24 @@ jobs:
       #     oc set image deployment/fotoalbum-frontend fotoalbum-frontend=$FRONTEND_DIGEST -n fotoalbum
       #     oc set image deployment/fotoalbum-locust fotoalbum-locust=$LOCUST_DIGEST -n fotoalbum
 
-      - name: Update deployment with new image
-        run: |
-          # Get image digest for the new build
-          DIGEST=$(oc get istag fotoalbum-${{ matrix.service }}:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
+      # - name: Update deployment with new image
+      #   run: |
+      #     # Get image digest for the new build
+      #     DIGEST=$(oc get istag fotoalbum-${{ matrix.service }}:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
           
-          # Set the new image for the deployment
+      #     # Set the new image for the deployment
+      #     oc set image deployment/fotoalbum-${{ matrix.service }} fotoalbum-${{ matrix.service }}=$DIGEST -n fotoalbum
+
+      - name: Update deployment with new image
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          DIGEST=$(oc get istag fotoalbum-${{ matrix.service }}:latest -n fotoalbum -o jsonpath='{.image.dockerImageReference}')
           oc set image deployment/fotoalbum-${{ matrix.service }} fotoalbum-${{ matrix.service }}=$DIGEST -n fotoalbum
   terraform:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs: deploy
+    if: always()
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
