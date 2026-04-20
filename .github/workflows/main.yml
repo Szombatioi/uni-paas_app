@@ -87,6 +87,8 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Init
         working-directory: terraform
@@ -116,21 +118,6 @@ jobs:
           backend_image           = "${{ steps.digests.outputs.server }}"
           frontend_image          = "${{ steps.digests.outputs.frontend }}"
           EOF
-
-      - name: Import existing resources
-        working-directory: terraform
-        run: |
-          terraform import -var-file="ci.tfvars" kubernetes_persistent_volume_claim.postgres_pvc fotoalbum/fotoalbum-db || true
-          terraform import -var-file="ci.tfvars" kubernetes_deployment.postgres fotoalbum/fotoalbum-db || true
-          terraform import -var-file="ci.tfvars" kubernetes_service.postgres fotoalbum/fotoalbum-db || true
-          terraform import -var-file="ci.tfvars" kubernetes_secret.fotoalbum_secrets fotoalbum/fotoalbum-secrets || true
-          terraform import -var-file="ci.tfvars" kubernetes_config_map.fotoalbum_config fotoalbum/fotoalbum-config || true
-          terraform import -var-file="ci.tfvars" kubernetes_deployment.backend fotoalbum/fotoalbum-server || true
-          terraform import -var-file="ci.tfvars" kubernetes_service.backend fotoalbum/fotoalbum-server || true
-          terraform import -var-file="ci.tfvars" kubernetes_deployment.auth fotoalbum/fotoalbum-auth || true
-          terraform import -var-file="ci.tfvars" kubernetes_service.auth fotoalbum/fotoalbum-auth || true
-          terraform import -var-file="ci.tfvars" kubernetes_deployment.frontend fotoalbum/fotoalbum-frontend || true
-          terraform import -var-file="ci.tfvars" kubernetes_service.frontend fotoalbum/fotoalbum-frontend || true
 
       - name: Terraform Apply
         working-directory: terraform
