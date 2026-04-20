@@ -10,7 +10,7 @@ resource "kubernetes_secret" "fotoalbum_secrets" {
   JWT_SECRET       = var.jwt_secret
   MINIO_ACCESS     = var.s3_access_key
   MINIO_SECRET     = var.s3_secret_key
-  DB_HOST          = "fotoalbum-db"        # átköltöztetve secretből
+  DB_HOST          = "fotoalbum-db"
   DB_PORT          = "5432"
   DB_NAME          = var.db_name
   DB_TYPE          = var.db_type
