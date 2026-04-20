@@ -2,6 +2,8 @@
 
 A BME Mérnökinformatikus MSc képzés `Felhő alapú elosztott rendszerek laboratórium` tárgy első két laborfeladatának dokumentációja.
 
+[![Deploy to OpenShift](https://github.com/Szombatioi/uni-paas_app/actions/workflows/main.yml/badge.svg)](https://github.com/Szombatioi/uni-paas_app/actions/workflows/main.yml)
+
 ## Implementáció
 ### Frontend - Next.js (Megjelenítési réteg)
 
