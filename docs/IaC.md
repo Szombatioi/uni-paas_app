@@ -10,3 +10,26 @@ openshift Terraform provider használata, ami natívan ismeri a Route típust é
 
 
 Cloudflare R2 nincs kezelve - csak a credentials van kezelve, maga a bucket nem
+
+
+
+main.tf
+* K8s provider konfig
+* Openshift kapcsolat
+
+variables.tf
+    változók dekl.
+secrets.tf
+    K8s secret + ConfigMap
+
+databaase.tf
+* postgresql pvc, deployment és service
+
+backend, auth, frontend.tf
+* deploymentek és serice-k
+
+
+Workflow:
+* tfvars generálása
+* előbb import existing resources, ha sikertelen, akkor újat hoz létre
+* terraform apply
