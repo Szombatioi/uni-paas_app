@@ -22,6 +22,7 @@ OpenShift platformon a Service erőforrások biztosítják a Pod-ok közti bels�
 
 Emellett a Route-okat sem kezeltem, mivel hallgatói fiókkal jogosultságbeli problémákba ütköztem. Mivel a Route erőforrások ritkán vagy szinte soha nem változnak, ezért ezt nem tekintettem kritikus problémának.
 
+A feladat leírásában említve volt, hogy kezelni kell a hozzáféréskezelést is az IaC eszközzel. Mivel az egyetemi OKD namespace szinten kezeli, ezért külön IAM role-ok konfigurálása nem volt szükséges.
 
 ## A megváltoztatott Workflow
 A CI/CD workflow fájl (`.github/workflows/main.yml`) annyiban változott, hogy most már egy matrix service végzi az image-k frissítését, párhuzamosan. Új image készítése csak akkor történik meg, ha ténylegesen van változás a kódban. Ezzel a párhuzamosítási és kódváltozás ellenőrzési lépéssel jelentős javulást értem el a workflow ezen részén. (~15-20p helyett ~1p, ha nincs kódváltozás)
