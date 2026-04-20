@@ -1,6 +1,0 @@
-runtime: custom
-env: flex
-service: default
-
-build_env_variables:
-  NEXT_PUBLIC_BACKEND_URL: "https://fotoalbum-server-dot-project-ef150698-8de6-49cc-9e8.ew.r.appspot.com"
