@@ -1,5 +1,5 @@
 terraform {
-  cloud { #Now in the Terraform cloud instead of local state
+  cloud { #Lab4: in the Terraform cloud instead of local state
     organization = "fotoalbum"
 
     workspaces {
